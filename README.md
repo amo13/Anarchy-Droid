@@ -1,7 +1,7 @@
 # Anarchy-Droid
 One-Click Android rom installation assistant
 
-![screenshot-working](screenshots/screenshot-working.png)
+![start](screenshots/start.png)
 
 Anarchy-Droid is an application designed to help you install custom roms on your Android device. It is supposed to make the process of finding, downloading and installing a rom (with addons like F-Droid and microG) as easy as possible. The primary audience is all the folks who do not really know anything about Android, TWRP or roms, but still would like to run a free, open-source and non-bloated Android on their devices. Using a free after-market rom like LineageOS should not be restricted to the few people with enough technical know-how to do the complex installation procedure all by themselves.
 
@@ -64,7 +64,7 @@ On this page of the application you can change some basic settings:
 - Aurora Store: This is an app made to use the Google Play Store without having the original Play Store app installed. You can use it with your own Google account or without Google account. Note: If using it without Google account, you will not be able to install paid apps.
 
 
-### Expert settings
+### Advanced settings
 
 It is advised to only change these settings if you really know what they mean and what you are doing. Otherwise the result of the installation process might not be what you would expect.
 
