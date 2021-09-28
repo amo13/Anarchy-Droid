@@ -1,0 +1,29 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  platform_tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.5.0
+      id: setup-go-faster
+      with:
+        go-version: *
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+      if: ${{ runner.os == 'Linux' }}
+
+    - name: Build
+      run: go build -tags ci ./...
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build ${{ runner.os }}
+        path: build
