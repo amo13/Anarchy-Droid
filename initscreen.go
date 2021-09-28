@@ -102,7 +102,7 @@ func initApp() (bool, error) {
 
 	if runtime.GOOS == "linux" {
 		password := widget.NewPasswordEntry()
-		href := "https://gitlab.com/free-droid/free-droid"
+		href := "https://github.com/amo13/Anarchy-Droid#linux"
 		u, err := url.Parse(href)
 		if err != nil {
 			logger.LogError("unable to parse " + href + " as URL:", err)
