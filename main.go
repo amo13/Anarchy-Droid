@@ -50,11 +50,7 @@ func main() {
 	defer sentry.Flush(5 * time.Second)
 
 	a = app.New()
-	icon, err := fyne.LoadResourceFromPath("icon.png")
-	if err != nil {
-		logger.LogError("Error loading icon.png:", err)
-	}
-	a.SetIcon(icon)
+	a.SetIcon(resourceIconPng)
 
 	w = a.NewWindow(AppName)
 	w.SetMaster()

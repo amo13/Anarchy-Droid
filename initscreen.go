@@ -27,11 +27,7 @@ var Icon_adbserver *widget.Icon
 var Lbl_init_infotext *widget.Label
 
 func initScreen() fyne.CanvasObject {
-	icon, err := fyne.LoadResourceFromPath("icon.png")
-	if err != nil {
-		panic(err)
-	}
-	logo := canvas.NewImageFromResource(icon)
+	logo := canvas.NewImageFromResource(resourceIconPng)
 	logo.FillMode = canvas.ImageFillOriginal
 	// logo.SetMinSize(fyne.NewSize(30, 30))
 
