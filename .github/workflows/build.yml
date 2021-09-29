@@ -2,7 +2,7 @@ name: Build
 on: [push, pull_request]
 
 jobs:
-  platform_tests:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -32,7 +32,7 @@ jobs:
       run: go get fyne.io/fyne/v2/cmd/fyne
     
     - name: Package (Linux)
-      run: fyne package -release -executable build/anarchy-droid && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
+      run: fyne package -release -executable build/anarchy-droid && ls -l && mkdir pkg && mv anarchy-droid.tar.* pkg/
       if: ${{ runner.os == 'Linux' }}
       
     - name: Package (macOS)
