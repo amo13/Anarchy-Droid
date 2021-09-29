@@ -1,0 +1,7 @@
+Website = "https://anarchy-droid.org"
+
+[Details]
+Name = "Anarchy-Droid"
+ID = "org.droid.anarchy"
+Icon = "icon.png"
+Version = "0.9"
