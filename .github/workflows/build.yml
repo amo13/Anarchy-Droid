@@ -21,11 +21,11 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
 
     - name: Build (Linux & MacOS)
-      run: go build -tags ci -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
       if: ${{ runner.os != 'Windows' }}
     
     - name: Build (Windows)
-      run: go build -tags ci -ldflags "-s -w -X main.BuildDate=$(Get-Date -format 'u')" -o build/ .
+      run: go build -ldflags "-s -w -X main.BuildDate=$(Get-Date -format 'u')" -o build/ .
       if: ${{ runner.os == 'Windows' }}
     
     - name: Install fyne
