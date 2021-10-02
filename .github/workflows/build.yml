@@ -7,7 +7,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+#        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -17,16 +18,20 @@ jobs:
         go-version: "*"
 
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev x86_64-w64-mingw32-gcc
       if: ${{ runner.os == 'Linux' }}
 
     - name: Build (Linux & MacOS)
       run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
       if: ${{ runner.os != 'Windows' }}
     
-    - name: Build (Windows)
-      run: go build -ldflags "-s -w -X main.BuildDate=$(Get-Date -format 'u')" -o build/ .
-      if: ${{ runner.os == 'Windows' }}
+#    - name: Build (Windows)
+#      run: go build -ldflags "-s -w -X main.BuildDate=$(Get-Date -format 'u')" -o build/ .
+#      if: ${{ runner.os == 'Windows' }}
+
+    - name: Cross-compile for windows
+      run: GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+      if: ${{ runner.os == 'Linux' }}
     
     - name: Install fyne
       run: go get fyne.io/fyne/v2/cmd/fyne
@@ -39,9 +44,13 @@ jobs:
       run: fyne package -release -executable build/anarchy-droid && mkdir pkg && mv anarchy-droid.app pkg/
       if: ${{ runner.os == 'macOS' }}
     
+#    - name: Package (Windows)
+#      run: fyne package -release -executable build/anarchy-droid.exe && mkdir pkg && mv anarchy-droid.exe pkg/
+#      if: ${{ runner.os == 'Windows' }}
+
     - name: Package (Windows)
-      run: fyne package -release -executable build/anarchy-droid.exe && mkdir pkg && mv anarchy-droid.exe pkg/
-      if: ${{ runner.os == 'Windows' }}
+      run: CC=x86_64-w64-mingw32-gcc CGO_ENABLED=1 fyne package -release -executable build/anarchy-droid && ls -l && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
+      if: ${{ runner.os == 'Linux' }}
     
     - uses: actions/upload-artifact@v2
       with:
