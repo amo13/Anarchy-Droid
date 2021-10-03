@@ -1,0 +1,38 @@
+name: Build for MacOS
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
+      if: ${{ runner.os == 'Linux' }}
+
+    - name: Build
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+      
+    - name: Package (macOS)
+      run: fyne package -release -executable build/anarchy-droid && mkdir pkg && mv anarchy-droid.app pkg/Anarchy-Droid.app
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (MacOS)
+        path: pkg/Anarchy-Droid.app
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (MacOS binary)
+        path: build
