@@ -30,7 +30,7 @@ jobs:
 #      if: ${{ runner.os == 'Windows' }}
 
     - name: Cross-compile for windows
-      run: GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+      run: CC=gcc-mingw-w64 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
       if: ${{ runner.os == 'Linux' }}
     
     - name: Install fyne
