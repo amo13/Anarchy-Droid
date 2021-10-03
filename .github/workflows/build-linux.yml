@@ -1,0 +1,37 @@
+name: Build for Linux
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+
+    - name: Build
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+    
+    - name: Package (Linux)
+      run: fyne package -release -executable build/anarchy-droid && ls -l && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Linux)
+        path: pkg
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Linux binary)
+        path: build
