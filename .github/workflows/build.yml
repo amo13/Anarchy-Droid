@@ -18,7 +18,7 @@ jobs:
         go-version: "*"
 
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev x86_64-w64-mingw32-gcc
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
       if: ${{ runner.os == 'Linux' }}
 
     - name: Build (Linux & MacOS)
@@ -49,7 +49,7 @@ jobs:
 #      if: ${{ runner.os == 'Windows' }}
 
     - name: Package (Windows)
-      run: CC=x86_64-w64-mingw32-gcc CGO_ENABLED=1 fyne package -release -executable build/anarchy-droid && ls -l && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
+      run: CC=gcc-mingw-w64 CGO_ENABLED=1 fyne package -release -executable build/Anarchy-Droid.exe && ls -l && ls -l build/ && mkdir pkg && mv Anarchy-Droid.exe pkg/
       if: ${{ runner.os == 'Linux' }}
     
     - uses: actions/upload-artifact@v2
