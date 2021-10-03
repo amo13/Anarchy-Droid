@@ -1,0 +1,38 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
+
+    - name: Cross-compile for Windows
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+
+    - name: Package for Windows
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && mv anarchy-droid.exe pkg/Anarchy-Droid.exe
+      if: ${{ runner.os == 'Linux' }}
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Windows)
+        path: pkg
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Windows unpackaged)
+        path: build
