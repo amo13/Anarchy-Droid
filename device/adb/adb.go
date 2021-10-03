@@ -42,7 +42,7 @@ func Cmd(command string) (stdout string, err error) {
 			return "", fmt.Errorf("unauthorized")
 		} else if strings.Contains(stderr, "device still authorizing") {
 			return "", fmt.Errorf("unauthorized")
-		} else if strings.Contains(stderr, "Connection refused") && command == "kill-server" {
+		} else if command == "kill-server" && (strings.Contains(stderr, "Connection refused") || strings.Contains(stderr, "cannot connect to daemon")) {
 			return "", fmt.Errorf("connection refused")
 		} else if strings.Contains(stderr, "daemon not running; starting now") {
 			return stdout, nil
