@@ -56,7 +56,7 @@ func main() {
 	w.SetMaster()
 
 	w.Resize(fyne.NewSize(562, 226))
-	w.SetFixedSize(true)
+	// w.SetFixedSize(true)
 
 	active_screen = "initScreen"
 	w.SetContent(initScreen())
