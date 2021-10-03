@@ -49,7 +49,7 @@ jobs:
 #      if: ${{ runner.os == 'Windows' }}
 
     - name: Package (Windows)
-      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -release -executable build/Anarchy-Droid.exe && ls -l && ls -l build/ && mkdir pkg && mv Anarchy-Droid.exe pkg/
+      run: ls -l && ls -l build/ && CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/Anarchy-Droid.exe && ls -l && ls -l build/ && mkdir pkg && mv Anarchy-Droid.exe pkg/
       if: ${{ runner.os == 'Linux' }}
     
     - uses: actions/upload-artifact@v2
