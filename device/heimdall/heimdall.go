@@ -14,7 +14,7 @@ var Nosudo bool = false
 func heimdall_command() string {
 	switch runtime.GOOS {
 	case "windows":
-		return "bin/heimdall/heimdall.exe"
+		return "bin\\heimdall\\heimdall.exe"
 	case "darwin":
 		return "bin/heimdall/heimdall"
 	default:

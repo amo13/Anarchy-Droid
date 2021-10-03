@@ -16,7 +16,7 @@ var Nosudo bool = false
 func adb_command() string {
 	switch runtime.GOOS {
 	case "windows":
-		return "bin/platform-tools/adb.exe"
+		return "bin\\platform-tools\\adb.exe"
 	case "darwin":
 		return "bin/platform-tools/adb"
 	default:	// linux

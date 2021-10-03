@@ -15,7 +15,7 @@ var Nosudo bool = false
 func fastboot_command() string {
 	switch runtime.GOOS {
 	case "windows":
-		return "bin/platform-tools/fastboot.exe"
+		return "bin\\platform-tools\\fastboot.exe"
 	case "darwin":
 		return "bin/platform-tools/fastboot"
 	default:	// linux
