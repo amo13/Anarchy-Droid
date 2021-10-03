@@ -1,4 +1,4 @@
-name: Build
+name: Build for Windows
 on: [push, pull_request]
 
 jobs:
