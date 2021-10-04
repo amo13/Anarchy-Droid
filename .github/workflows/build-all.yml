@@ -2,7 +2,7 @@ name: Build
 on: [push, pull_request]
 
 jobs:
-  build for windows:
+  build-for-windows:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,7 +32,7 @@ jobs:
         path: pkg-win
 
 
-  build for mac:
+  build-for-mac:
     runs-on: macos-latest
     strategy:
       fail-fast: false
@@ -59,7 +59,7 @@ jobs:
         path: pkg-mac/Anarchy-Droid.app
 
 
-  build for linux:
+  build-for-linux:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
