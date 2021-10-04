@@ -103,7 +103,8 @@ A few things first:
 - Restart the computer
 
 #### Windows
-If Anarchy-Droid is unable to detect your device, you might need to install the official Windows drivers from the manufacturer of your device. Click [here](https://developer.android.com/studio/run/oem-usb#Drivers) to find where to download the driver for your device.
+If Anarchy-Droid is unable to detect your device in android, recovery or fastboot, you might need to install the official Windows drivers from the manufacturer of your device. Click [here](https://developer.android.com/studio/run/oem-usb#Drivers) to find where to download the driver for your device. Alternatively, you can also use the [universal ADB driver installer](https://stuff.free-droid.com/universaladbdriver_v6.0.zip).
+If Anarchy-Droid is unable to detect your Samsung device in download (or bootloader or Odin) mode, you can try to install according drivers with [zadig](https://stuff.free-droid.com/zadig-2.5.exe)
 
 #### Linux
 
