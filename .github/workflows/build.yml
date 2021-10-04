@@ -1,0 +1,94 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  build for windows:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
+
+    - name: Cross-compile for Windows
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build-win/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+
+    - name: Package for Windows
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build-win/anarchy-droid.exe && mkdir -p pkg-win && mv anarchy-droid.exe pkg-win/Anarchy-Droid.exe
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Windows)
+        path: pkg-win
+
+
+  build for mac:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Build
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build-mac/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+      
+    - name: Package (macOS)
+      run: fyne package -release -executable build-mac/anarchy-droid && mkdir pkg-mac && mv anarchy-droid.app pkg-mac/Anarchy-Droid.app
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (MacOS)
+        path: pkg-mac/Anarchy-Droid.app
+
+
+  build for linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: WillAbides/setup-go-faster@v1.6.0
+      id: setup-go-faster
+      with:
+        go-version: "*"
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+
+    - name: Build
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build-linux/ .
+    
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
+    
+    - name: Package (Linux)
+      run: fyne package -release -executable build-linux/anarchy-droid && ls -l && mkdir pkg-linux && mv Anarchy-Droid.tar.* pkg-linux/
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Linux package)
+        path: pkg-linux
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Linux binary)
+        path: build-linux/anarchy-droid
