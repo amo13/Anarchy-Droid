@@ -77,7 +77,7 @@ func modelToCodenameYamlMap() (map[string]string, error) {
 		return ModelToCodenameYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/codenames.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/codenames.yml")
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func codenameToBrandYamlMap() (map[string]string, error) {
 		return CodenameToBrandYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/brands.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/brands.yml")
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ func supportedYamlMap() (map[string]string, error) {
 		return SupportedYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/supported.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/supported.yml")
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func recoveryPartitionYamlMap() (map[string]string, error) {
 		return RecoveryPartitionYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/recovery_partition_names.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/recovery_partition_names.yml")
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +279,7 @@ func recoveryKeyCombinationYamlMap() (map[string]string, error) {
 		return RecoveryKeyCombinationYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/recovery_key_combinations.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/recovery_key_combinations.yml")
 	if err != nil {
 		return nil, err
 	}
@@ -311,7 +311,7 @@ func aliasYamlMap() (map[string]string, error) {
 		return AliasYamlMap, nil
 	}
 
-	content, err := helpers.ReadFromURL("https://gitlab.com/free-droid/free-droid/raw/master/lookups/aliases.yml")
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/aliases.yml")
 	if err != nil {
 		return nil, err
 	}
