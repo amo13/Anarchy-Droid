@@ -9,9 +9,9 @@ func Zadig() error {
 	url := "https://github.com/pbatard/libwdi/releases/download/b755/zadig-2.6.exe"
 	fallback_url := "https://stuff.free-droid.com/zadig-2.6.exe"
 
-	err := DownloadFile("bin/zadig-2.6.exe", url, "")
+	err := DownloadFile("bin/zadig.exe", url, "")
 	if err != nil {
-		err = DownloadFile("bin/zadig-2.6.exe", fallback_url, ".sha256")
+		err = DownloadFile("bin/zadig.exe", fallback_url, ".sha256")
 		if err != nil {
 			return err
 		}
