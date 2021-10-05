@@ -502,7 +502,6 @@ func finishInstallation() error {
 	Lbl_progressbar.SetText("")
 	Progressbar.Stop()
 	Lbl_flashing_instructions.SetText("Installation finished!\n\nNotice: The first boot will take longer.")
-	device.D1.Flashing = false
 
 	if !device.D1.Flashing {
 		logger.Log("User cancelled flashing")
