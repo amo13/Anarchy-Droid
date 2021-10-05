@@ -1,0 +1,11 @@
+---
+i9305: RECOVERY
+i9100: RECOVERY
+i8190: Kernel2
+golden: Kernel2
+kminilte: RECOVERY
+klte: RECOVERY
+herolte: RECOVERY
+hero2lte: RECOVERY
+zeroflte: RECOVERY
+guacamole: boot

@@ -1,0 +1,13 @@
+# Description of how to reboot manually to recovery using the hardware keys
+---
+samsung: "Now press and hold the VOLUME-DOWN + HOME + POWER buttons on your phone until the screen goes black and immediately switch from VOLUME-DOWN to VOL-UP."
+motorola: "Now use the VOLUME-DOWN button to select Recovery Mode and confirm by pressing the POWER (or VOLUME-UP) button."
+oneplus: "Now press and hold the VOLUME-DOWN + POWER buttons on your phone until you see the OnePlus Logo."
+sony: "Now press and hold the VOLUME-UP + POWER buttons on your phone until you see the Sony Logo."
+nvidia: "Now use your device to reboot into recovery (instructions on device screen)."
+i9305: "Now press and hold the VOLUME-UP + HOME + POWER buttons on your phone until you see the Samsung Logo."
+golden: "Now press and hold the VOLUME-UP + HOME + POWER buttons on your phone until you see the Samsung Logo."
+klte: "Now press and hold the VOLUME-UP + HOME + POWER buttons on your phone until you see the Samsung Logo."
+falcon: "Now use the VOLUME-DOWN button to select Recovery Mode and confirm by pressing the VOLUME-UP button."
+serranoveltexx: "Now press and hold the VOLUME-UP + HOME + POWER buttons on your phone until you see the Samsung Logo."
+suzuran: "Now plug out the usb cable, press and hold VOLUME-DOWN + POWER until the phone vibrates and let go. Then, plug the USB cable back in."
