@@ -165,8 +165,22 @@ func bootTwrpStep() error {
 
 		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"])
 		if err != nil {
-			logger.LogError("TWRP boot attempt returns the following error:", err)
-			return err
+			if err.Error() == "heimdall failed to access device" {
+				err = installDriversWithZadig()
+				if err != nil {
+					logger.LogError("Failed to download zadig", err)
+					return err
+				}
+				// Retry
+				reboot_instructions, err = device.D1.BootRecovery(Files["twrp_img"])
+				if err != nil {
+					logger.LogError("TWRP boot attempt returns the following error:", err)
+					return err
+				}
+			} else {
+				logger.LogError("TWRP boot attempt returns the following error:", err)
+				return err
+			}
 		}
 
 		// Displays instructions and waits if needed
@@ -197,6 +211,60 @@ func bootTwrpStep() error {
 	}
 
 	return nil
+}
+
+func installDriversWithZadig() error {
+	err := get.Zadig()
+	if err != nil {
+		return err
+	}
+
+	err = writeZadigConfig()
+	if err != nil {
+		return err
+	}
+
+	Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
+
+	os.Chdir("bin")
+	defer os.Chdir("..")
+
+	stdout, stderr := helpers.Cmd(`Powershell -Command "& { Start-Process \"zadig.exe\" -Verb RunAs }`)
+	logger.Log("Zadig stdout:", stdout)
+	logger.LogError("Zadig stderr:", fmt.Errorf(stderr))
+
+	return nil
+}
+
+func writeZadigConfig() error {
+	file, err := os.OpenFile("bin/zadig.ini", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+    if err != nil {
+        return err
+    }
+
+    // Write the file
+    fmt.Fprintln(file, "[general]")
+    fmt.Fprintln(file, "advanced_mode = false")
+	fmt.Fprintln(file, "exit_on_success = true")
+	fmt.Fprintln(file, "log_level = 0")
+	fmt.Fprintln(file, "  ")
+	fmt.Fprintln(file, "[device]")
+	fmt.Fprintln(file, "list_all = true")
+	fmt.Fprintln(file, "include_hubs = false")
+	fmt.Fprintln(file, "trim_whitespaces = true")
+	fmt.Fprintln(file, "  ")
+	fmt.Fprintln(file, "[driver]  ")
+	fmt.Fprintln(file, "default_driver = 0")
+	fmt.Fprintln(file, "extract_only = false")
+	fmt.Fprintln(file, "  ")
+	fmt.Fprintln(file, "[security]")
+
+    err = file.Close()
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 func installOnAOnly() error {

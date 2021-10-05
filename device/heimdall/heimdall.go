@@ -94,12 +94,15 @@ func FlashRecovery(img_file string, partition string) error {
 
 	if strings.Contains(strings.ToLower(result), "upload successful") {
 		return nil
+	} else if strings.Contains(strings.ToLower(result), "failed to access device") {
+		logger.LogError("heimdall failed to access device", fmt.Errorf(result))
+		return fmt.Errorf("heimdall failed to access device")
 	} else if strings.Contains(strings.ToLower(result), "upload failed") {
-		logger.Log("failed to flash recovery")
-		return fmt.Errorf("failed")
+		logger.Log("heimdall failed to flash recovery")
+		return fmt.Errorf("heimdall failed to flash recovery")
 	} else {
-		logger.Log("unknown response")
-		return fmt.Errorf("unknown response")
+		logger.LogError("unknown heimdall response:", fmt.Errorf(result))
+		return fmt.Errorf("unknown heimdall response: " + result)
 	}
 }
 
