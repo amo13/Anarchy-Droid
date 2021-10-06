@@ -14,10 +14,6 @@ jobs:
       with:
         go-version: "*"
 
-    - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
-      if: ${{ runner.os == 'Linux' }}
-
     - name: Build
       run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ .
     
