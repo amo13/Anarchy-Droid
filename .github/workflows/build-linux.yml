@@ -18,13 +18,13 @@ jobs:
       run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
 
     - name: Build
-      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ . && mv build/anarchy-droid build/Anarchy-Droid_linux_amd64
     
     - name: Install fyne
       run: go get fyne.io/fyne/v2/cmd/fyne
     
     - name: Package (Linux)
-      run: fyne package -release -executable build/anarchy-droid && ls -l && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
+      run: fyne package -release -executable build/Anarchy-Droid_linux_amd64 && ls -l && mkdir pkg && mv Anarchy-Droid.tar.* pkg/
     
     - uses: actions/upload-artifact@v2
       with:
@@ -35,3 +35,8 @@ jobs:
       with:
         name: Anarchy-Droid (Linux binary)
         path: build
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid_linux_amd64
+        path: build/Anarchy-Droid_linux_amd64

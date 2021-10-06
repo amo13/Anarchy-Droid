@@ -13,9 +13,9 @@ import (
 )
 
 const AppName = "Anarchy-Droid"
-const AppVersion = "0.9.0"
+var AppVersion string	// AppVersion infected from FyneApp.toml during build
 var BuildDate string	// Build date injected during build
-// use: go run -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" .
+// use: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" .
 
 var a fyne.App
 var w fyne.Window

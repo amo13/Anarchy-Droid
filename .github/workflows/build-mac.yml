@@ -19,7 +19,7 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
 
     - name: Build
-      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d`" -o build/ .
+      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ .
     
     - name: Install fyne
       run: go get fyne.io/fyne/v2/cmd/fyne
