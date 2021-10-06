@@ -109,6 +109,10 @@ Beware that on Windows 11, it seems that you can only install official drivers.
 
 #### Linux
 
+##### Launching
+In order to launch the application on linux, you might need to allow executing the application (binary) file as a program. On most desktop environments, you can right-click the file, select *Properties* and tick something like *Allow executing file as a program* or similar. Alternatively, you can open a terminal in the directory where the program file is and execute `chmod +x ./Anarchy-Droid`.
+
+##### Udev Rules
 ![udev](screenshots/udev.png)
 
 On Linux systems, normal users are not allowed to access the devices over USB in the way this application needs to. Therefore, you have to choose between two options: the first is to simply provide your sudo password, the second is to setup udev rules for android devices.
