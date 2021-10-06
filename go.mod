@@ -10,6 +10,7 @@ require (
 	github.com/antchfx/xmlquery v1.3.7 // indirect
 	github.com/codingsince1985/checksum v1.2.3
 	github.com/commander-cli/cmd v1.3.0
+	github.com/creativeprojects/go-selfupdate v0.6.1
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-gl/gl v0.0.0-20210905235341-f7a045908259 // indirect

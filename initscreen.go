@@ -16,6 +16,10 @@ import(
 	"anarchy-droid/device/fastboot"
 	"anarchy-droid/device/heimdall"
 
+	"github.com/creativeprojects/go-selfupdate"
+
+	"os"
+	"fmt"
 	"runtime"
 	"net/url"
 )
@@ -90,11 +94,22 @@ func initApp() (bool, error) {
 		Icon_binaries.SetResource(theme.ConfirmIcon())
 	}
 
-	// Check if the application is up-to-date
-	//////////////////////////////////////////////////
 	Lbl_init_infotext.Text = "Updating application..."
-	Icon_uptodate.SetResource(theme.ConfirmIcon())
-	//////////////////////////////////////////////////
+	err = selfUpdate(AppVersion)
+	if err != nil {
+		if err.Error() == "Update successful, please restart the application" {
+			Icon_uptodate.SetResource(theme.MediaReplayIcon())
+			info_dialog := dialog.NewInformation("Update successful", AppName + " has been updated. Please restart the application.", w)
+			info_dialog.SetOnClosed(func() { a.Quit() } )
+			info_dialog.Show()
+			return true, nil
+		} else {
+			Icon_uptodate.SetResource(theme.CancelIcon())
+			return false, err
+		}
+	} else {
+		Icon_uptodate.SetResource(theme.ConfirmIcon())
+	}
 
 	if runtime.GOOS == "linux" {
 		password := widget.NewPasswordEntry()
@@ -172,4 +187,29 @@ func finishInitApp() (bool, error) {
 		go logger.Report(map[string]string{"progress":"Setup Failed"})
 		return false, nil
 	}
+}
+
+func selfUpdate(version string) error {
+	latest, found, err := selfupdate.DetectLatest("amo13/Anarchy-Droid")
+	if err != nil {
+		return fmt.Errorf("error occurred while detecting version: %v", err)
+	}
+	if !found {
+		return fmt.Errorf("latest version for %s/%s could not be found from github repository", runtime.GOOS, runtime.GOARCH)
+	}
+
+	if latest.LessOrEqual(version) {
+		logger.Log("Current version", version, "is the latest")
+		return nil
+	}
+
+	exe, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("could not locate executable path: %v", err)
+	}
+	if err := selfupdate.UpdateTo(latest.AssetURL, latest.AssetName, exe); err != nil {
+		return fmt.Errorf("error occurred while updating binary: %v", err)
+	}
+	logger.Log("Successfully updated to version", latest.Version())
+	return fmt.Errorf("Update successful, please restart the application")
 }
