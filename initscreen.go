@@ -103,6 +103,10 @@ func initApp() (bool, error) {
 			info_dialog.SetOnClosed(func() { a.Quit() } )
 			info_dialog.Show()
 			return true, nil
+		} else if strings.HasPrefix(err.Error(), "error occurred while detecting version") {
+			logger.LogError("Unable to check for update:", err)
+			logger.Log("Continuing anyway...")
+			Icon_uptodate.SetResource(theme.ConfirmIcon())
 		} else {
 			Icon_uptodate.SetResource(theme.CancelIcon())
 			return false, err
