@@ -30,7 +30,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: Anarchy-Droid (MacOS)
-        path: pkg/Anarchy-Droid.app
+        path: pkg
     
     - uses: actions/upload-artifact@v2
       with:
