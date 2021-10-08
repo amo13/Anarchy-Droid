@@ -16,6 +16,9 @@ const AppName = "Anarchy-Droid"
 var AppVersion string	// AppVersion infected from FyneApp.toml during build
 var BuildDate string	// Build date injected during build
 // use: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" .
+// or use sed to insert the values in place after checkout and before compilation:
+// sed -i "s/.*var AppVersion string.*/var AppVersion string = \"`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`\"/" main.go
+// sed -i "s/.*var BuildDate string.*/var BuildDate string = \"`date +%Y-%m-%d`\"/" main.go
 
 var a fyne.App
 var w fyne.Window
