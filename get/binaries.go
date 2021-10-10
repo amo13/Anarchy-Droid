@@ -61,32 +61,30 @@ func dlPlatformTools() error {
 }
 
 func dlHeimdall() error {
-	url := "https://gitlab.com/free-droid/free-droid/-/raw/master/heimdall"
+	url := "https://github.com/amo13/Heimdall/releases/download/v1.4.2/"
 	thisOS := runtime.GOOS
-	if thisOS == "windows" {
-		thisOS = "win"
+	if thisOS == "darwin" {
+		thisOS = "macos"
 	}
-	url = url + "/heimdall-" + thisOS + ".zip"
+	url = url + "/heimdall-" + thisOS
+	if thisOS == "windows" {
+		url = url + ".exe"
+	}
 
-	err := DownloadFile("heimdall.zip", url, "")
-	if err != nil {
-		return err
+	if thisOS == "windows" {
+		err := DownloadFile("bin/heimdall/heimdall.exe", url, "")
+		if err != nil {
+			return err
+		}
+	} else {
+		err := DownloadFile("bin/heimdall/heimdall", url, "")
+		if err != nil {
+			return err
+		}
 	}
 
 	logger.Log("Done downloading heimdall")
-
-	err = helpers.Unzip("heimdall.zip", "bin/heimdall/")
-	if err != nil {
-		return err
-	}
-
-	logger.Log("Done extracting heimdall")
-
-	err = os.Remove("heimdall.zip")
-	if err != nil {
-		return err
-	}
-
+	
 	return nil
 }
 
