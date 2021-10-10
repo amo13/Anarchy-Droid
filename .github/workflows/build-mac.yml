@@ -33,5 +33,5 @@ jobs:
     
     - uses: actions/upload-artifact@v2
       with:
-        name: Anarchy-Droid (MacOS binary)
+        name: Anarchy-Droid_windows_amd64
         path: build
