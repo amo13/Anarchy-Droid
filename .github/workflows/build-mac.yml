@@ -14,6 +14,9 @@ jobs:
       with:
         go-version: "*"
 
+    - name: Update AppVersion and BuildDate
+      run: chmod +x ./updateAppVersionAndBuildDate.sh && ./updateAppVersionAndBuildDate.sh
+
     - name: Build
       run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ .
     
