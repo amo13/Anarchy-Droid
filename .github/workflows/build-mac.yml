@@ -16,9 +16,6 @@ jobs:
 
     - name: Update AppVersion and BuildDate
       run: chmod +x ./updateAppVersionAndBuildDate.sh && ./updateAppVersionAndBuildDate.sh
-
-#    - name: Build
-#      run: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ .
     
     - name: Install fyne
       run: go get fyne.io/fyne/v2/cmd/fyne
@@ -26,12 +23,18 @@ jobs:
     - name: Package (macOS)
       run: fyne package -release && mkdir pkg && mv anarchy-droid.app pkg/Anarchy-Droid.app
     
+    # - name: Build
+    #   run: go build -o build/ . && mv build/anarchy-droid build/Anarchy-Droid_darwin_amd64
+
+    - name: Extract binary
+      run: mkdir -p build && cp pkg/Anarchy-Droid.app/Contents/MacOS/anarchy-droid build/Anarchy-Droid_darwin_amd64
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (MacOS)
+        path: pkg
+    
     - uses: actions/upload-artifact@v2
       with:
         name: Anarchy-Droid_darwin_amd64
-        path: pkg/Anarchy-Droid.app
-    
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: Anarchy-Droid_darwin_amd64
-#        path: build
+        path: build/Anarchy-Droid_darwin_amd64
