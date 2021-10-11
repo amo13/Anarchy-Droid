@@ -178,6 +178,10 @@ func finishInitApp() (bool, error) {
 	}
 	Icon_adbserver.SetResource(theme.ConfirmIcon())
 
+	// Kill adb server if the app is closed
+	// but only if it has been started
+	w.SetOnClosed(func() { adb.KillServer() })
+
 	// Start watching for device connections
 	device.D1.Observe()
 
