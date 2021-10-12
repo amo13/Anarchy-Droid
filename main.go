@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"time"
+	"runtime"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -68,6 +69,12 @@ func main() {
 
 	active_screen = "initScreen"
 	w.SetContent(initScreen())
+
+	// On MacOS, move up the folder structure to move
+	// out of the application content directory
+	if runtime.GOOS == "darwin" {
+		os.Chdir("../..")
+	}
 
 	// Set working directory to a subdir named like the app
 	_, err = os.Stat(AppName)
