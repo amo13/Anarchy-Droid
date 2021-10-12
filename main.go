@@ -25,6 +25,11 @@ var w fyne.Window
 var active_screen string
 
 func main() {
+	// Set AppVersion to "DEVELOPMENT" if it was left empty
+	if AppVersion == "" {
+		AppVersion = "DEVELOPMENT"
+	}
+
 	// Propagate AppVersion and BuildDate to the logger package
 	logger.Consent = true
 	logger.AppName = AppName

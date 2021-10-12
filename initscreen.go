@@ -96,21 +96,25 @@ func initApp() (bool, error) {
 	}
 
 	Lbl_init_infotext.Text = "Updating application..."
-	err = selfUpdate(AppVersion)
-	if err != nil {
-		if err.Error() == "Update successful, please restart the application" {
-			Icon_uptodate.SetResource(theme.MediaReplayIcon())
-			info_dialog := dialog.NewInformation("Update successful", AppName + " has been updated. Please restart the application.", w)
-			info_dialog.SetOnClosed(func() { a.Quit() } )
-			info_dialog.Show()
-			return true, nil
-		} else if strings.HasPrefix(err.Error(), "error occurred while detecting version") {
-			logger.LogError("Unable to check for update:", err)
-			logger.Log("Continuing anyway...")
-			Icon_uptodate.SetResource(theme.ConfirmIcon())
+	if AppVersion != "DEVELOPMENT" {
+		err = selfUpdate(AppVersion)
+		if err != nil {
+			if err.Error() == "Update successful, please restart the application" {
+				Icon_uptodate.SetResource(theme.MediaReplayIcon())
+				info_dialog := dialog.NewInformation("Update successful", AppName + " has been updated. Please restart the application.", w)
+				info_dialog.SetOnClosed(func() { a.Quit() } )
+				info_dialog.Show()
+				return true, nil
+			} else if strings.HasPrefix(err.Error(), "error occurred while detecting version") {
+				logger.LogError("Unable to check for update:", err)
+				logger.Log("Continuing anyway...")
+				Icon_uptodate.SetResource(theme.ConfirmIcon())
+			} else {
+				Icon_uptodate.SetResource(theme.CancelIcon())
+				return false, err
+			}
 		} else {
-			Icon_uptodate.SetResource(theme.CancelIcon())
-			return false, err
+			Icon_uptodate.SetResource(theme.ConfirmIcon())
 		}
 	} else {
 		Icon_uptodate.SetResource(theme.ConfirmIcon())
