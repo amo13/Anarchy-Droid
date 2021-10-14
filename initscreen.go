@@ -74,7 +74,7 @@ func initScreen() fyne.CanvasObject {
 }
 
 func initApp() (bool, error) {
-	Lbl_init_infotext.Text = "Checking internet connection..."
+	Lbl_init_infotext.SetText("Checking internet connection...")
 	status_code, err := get.StatusCode("https://gitlab.com/free-droid/free-droid/raw/master/lookups/codenames.yml")
 	if err != nil {
 		return false, err
@@ -86,7 +86,7 @@ func initApp() (bool, error) {
 		return false, nil
 	}
 
-	Lbl_init_infotext.Text = "Downloading binaries..."
+	Lbl_init_infotext.SetText("Downloading binaries...")
 	err = get.Binaries()
 	if err != nil {
 		Icon_binaries.SetResource(theme.CancelIcon())
@@ -95,7 +95,7 @@ func initApp() (bool, error) {
 		Icon_binaries.SetResource(theme.ConfirmIcon())
 	}
 
-	Lbl_init_infotext.Text = "Updating application..."
+	Lbl_init_infotext.SetText("Updating application...")
 	if AppVersion != "DEVELOPMENT" {
 		err = selfUpdate(AppVersion)
 		if err != nil {
@@ -174,7 +174,7 @@ func finishInitApp() (bool, error) {
 		Icon_adbserver.SetResource(theme.CancelIcon())
 		return false, err
 	}
-	Lbl_init_infotext.Text = "Restarting ADB server..."
+	Lbl_init_infotext.SetText("Restarting ADB server...")
 	err = adb.StartServer()
 	if err != nil {
 		Icon_adbserver.SetResource(theme.CancelIcon())
