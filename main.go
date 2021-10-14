@@ -3,12 +3,14 @@ package main
 import (
 	"os"
 	"time"
+	"strings"
 	"runtime"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 
 	"anarchy-droid/logger"
+	"anarchy-droid/helpers"
 
 	"github.com/getsentry/sentry-go"
 )
@@ -58,7 +60,7 @@ func main() {
 	// Set the timeout to the maximum duration the program can afford to wait.
 	defer sentry.Flush(5 * time.Second)
 
-	a = app.New()
+	a = app.NewWithID("com.anarchy-droid")
 	a.SetIcon(resourceIconPng)
 
 	w = a.NewWindow(AppName)
@@ -70,10 +72,13 @@ func main() {
 	active_screen = "initScreen"
 	w.SetContent(initScreen())
 
-	// On MacOS, move up the folder structure to move
-	// out of the application content directory
+	// On MacOS, move into the user's Downloads folder
+	// to prevent being either inside the read-only
+	// application package or inside a jail folder
 	if runtime.GOOS == "darwin" {
-		os.Chdir("../..")
+		u, _ := helpers.Cmd("whoami")
+		u = strings.ReplaceAll(u, "\n", "")
+		os.Chdir("/Users/" + u + "/Downloads")
 	}
 
 	// Set working directory to a subdir named like the app
