@@ -107,10 +107,14 @@ If Anarchy-Droid is unable to detect your device in android, recovery or fastboo
 If Anarchy-Droid is unable to detect your Samsung device in download (or bootloader or Odin) mode, you can try to install according drivers with [zadig](https://stuff.free-droid.com/zadig-2.5.exe)
 Beware that on Windows 11, it seems that you can only install official drivers.
 
-#### Linux
-
+#### MacOS
 ##### Launching
-In order to launch the application on linux, you might need to allow executing the application (binary) file as a program. On most desktop environments, you can right-click the file, select *Properties* and tick something like *Allow executing file as a program* or similar. Alternatively, you can open a terminal in the directory where the program file is and execute `chmod +x ./Anarchy-Droid`.
+![unidentified-developer](screenshots/macos-unidentified-developer.png)
+MacOS will probably present you the above notice telling you that Anarchy-Droid is not trusted because it is from an unidentified developer. This is simply because Anarchy-Droid is not willing to pay Apple $100 a year to be *identified* my MacOS. To start the application, either open the System Preferences of you Mac, select *Security & Privacy* and click on *Open Anyway*, or simply right-click on the Anarchy-Droid app, choose *Open* from the menu and choose again *Open* on the popup-window.
+
+#### Linux
+##### Launching
+In order to launch the application on linux, you might need to allow executing the application (binary) file as a program. On most desktop environments, you can right-click the file, select *Properties* and tick something like *Allow executing file as a program* or similar. Alternatively, you can open a terminal in the directory where the program file is located and execute `chmod +x ./Anarchy-Droid`.
 
 ##### Udev Rules
 ![udev](screenshots/udev.png)
