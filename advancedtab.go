@@ -9,9 +9,9 @@ import(
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/theme"
 
-	"anarchy-droid/helpers"
-	"anarchy-droid/logger"
-	"anarchy-droid/get"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/get"
 )
 
 // Left side

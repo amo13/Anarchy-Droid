@@ -2,7 +2,8 @@ package get
 
 import (
 	"os"
-	"anarchy-droid/helpers"
+
+	"github.com/amo13/anarchy-droid/helpers"
 )
 
 func Zadig() error {

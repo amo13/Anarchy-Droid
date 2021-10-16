@@ -6,8 +6,8 @@ import(
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
-	"anarchy-droid/device"
-	"anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/logger"
 )
 
 var Lbl_flashing_title *widget.Label

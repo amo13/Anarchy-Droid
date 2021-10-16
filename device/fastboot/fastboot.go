@@ -1,9 +1,10 @@
 package fastboot
 
 import (
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
-	"anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/device/adb"
+
 	"runtime"
 	"strings"
 	"fmt"

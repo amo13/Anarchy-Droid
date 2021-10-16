@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"time"
 	"regexp"
-	// "runtime"
 	"strings"
 	"io/ioutil"
 
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
-	"anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/device/adb"
 )
 
 const Logpath = "log/"

@@ -1,8 +1,8 @@
 package get
 
 import (
-	"anarchy-droid/helpers"
-	"anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/logger"
 
 	"encoding/json"
 	"strings"

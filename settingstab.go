@@ -9,10 +9,10 @@ import(
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 
-	"anarchy-droid/helpers"
-	"anarchy-droid/device"
-	"anarchy-droid/logger"
-	"anarchy-droid/get"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/get"
 
 	"strings"
 	"fmt"

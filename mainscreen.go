@@ -9,9 +9,9 @@ import(
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 
-	"anarchy-droid/get"
-	"anarchy-droid/device"
-	"anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/get"
+	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/logger"
 )
 
 var last_codename string	// Used in IsNewDevice() to help call ReloadRoms() when a new device (codename) is connected

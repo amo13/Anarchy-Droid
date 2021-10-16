@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"anarchy-droid/logger"
-	"anarchy-droid/lookup"
-	"anarchy-droid/helpers"
-	"anarchy-droid/device/adb"
-	"anarchy-droid/device/twrp"
-	"anarchy-droid/device/fastboot"
-	"anarchy-droid/device/heimdall"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/lookup"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/device/twrp"
+	"github.com/amo13/anarchy-droid/device/fastboot"
+	"github.com/amo13/anarchy-droid/device/heimdall"
 )
 
 var D1 = NewDevice()

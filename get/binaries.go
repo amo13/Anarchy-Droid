@@ -4,8 +4,9 @@ import (
 	"os"
 	"fmt"
 	"runtime"
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
+
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
 )
 
 func Binaries() error {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/helpers"
 )
 
 func GuessRomNameAndAndroidVersion(filename string) (name string, av string, err error) {

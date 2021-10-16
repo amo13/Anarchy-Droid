@@ -9,12 +9,12 @@ import(
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/container"
 
-	"anarchy-droid/get"
-	"anarchy-droid/device"
-	"anarchy-droid/logger"
-	"anarchy-droid/device/adb"
-	"anarchy-droid/device/fastboot"
-	"anarchy-droid/device/heimdall"
+	"github.com/amo13/anarchy-droid/get"
+	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/device/fastboot"
+	"github.com/amo13/anarchy-droid/device/heimdall"
 
 	"github.com/creativeprojects/go-selfupdate"
 

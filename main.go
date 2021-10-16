@@ -9,8 +9,8 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
 
 	"github.com/getsentry/sentry-go"
 )

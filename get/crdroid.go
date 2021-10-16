@@ -2,8 +2,10 @@ package get
 
 import (
 	"github.com/gocolly/colly"
-	"anarchy-droid/helpers"
-	"anarchy-droid/logger"
+
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/logger"
+
 	"net/http"
 	"strings"
 	"sort"

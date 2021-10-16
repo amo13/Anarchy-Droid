@@ -4,11 +4,12 @@ import(
 	"fmt"
 	"strings"
 	"strconv"
-	"anarchy-droid/get"
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
-	"anarchy-droid/device/adb"
-	"anarchy-droid/device/fastboot"
+
+	"github.com/amo13/anarchy-droid/get"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
+	"github.com/amo13/anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/device/fastboot"
 )
 
 var AliasYamlMap map[string]string

@@ -5,9 +5,9 @@ import(
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 
-	"anarchy-droid/logger"
-	"anarchy-droid/device"
-	"anarchy-droid/device/adb"
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/device/adb"
 )
 
 var Center_flashing_box *fyne.Container

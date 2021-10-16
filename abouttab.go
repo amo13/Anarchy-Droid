@@ -7,7 +7,7 @@ import(
 
 	"net/url"
 
-	"anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/logger"
 )
 
 func abouttab() fyne.CanvasObject {

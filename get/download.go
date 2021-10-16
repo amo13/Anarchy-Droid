@@ -7,8 +7,10 @@ import (
 	"strings"
 	"net/http"
 	"path/filepath"
-	"anarchy-droid/logger"
-	"anarchy-droid/helpers"
+
+	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
+
 	"github.com/codingsince1985/checksum"
 )
 
