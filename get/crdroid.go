@@ -153,7 +153,7 @@ func CrDroidLatestAvailableHref(codename string) (string, error) {
 	}
 	A1.Upstream.Rom["crDroid"].Android_version = av
 
-	return latest_available, nil
+	return dl_url, nil
 }
 
 func CrDroidParseAndroidVersion(filename string) (string, error) {
