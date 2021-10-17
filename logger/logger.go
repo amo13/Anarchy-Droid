@@ -28,7 +28,7 @@ var Device_model string
 var Device_codename string
 
 func Report(params map[string]string) {
-	if params["tracking_consent"] == "false" || !Consent {
+	if params["tracking_consent"] == "false" || !Consent || AppVersion == "DEVELOPMENT" {
 		Log("Skipped reporting:")
 		Log(mapToString(params))
 		return
