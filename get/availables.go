@@ -347,6 +347,165 @@ func (a *Available) Populate(codename string) error {
 	return nil
 }
 
+func (a *Available) PopulateForApi(codename string) error {
+	var wg sync.WaitGroup
+	errs := make(chan RetrievalError)
+	wg.Add(8)
+
+	go func() {
+		defer wg.Done()
+
+		h, err := TwrpImgLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"TWRP-Img", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Twrp.Img.Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := a.PopulateArchive(codename)
+		if err != nil {
+			errs <- RetrievalError{"Archive", err}
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := LineageosLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"LineageOS", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "LineageOS")
+			a.Upstream.Rom["LineageOS"] = &Item{}
+			a.Upstream.Rom["LineageOS"].Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := LineageosMicrogLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"LineageOSMicroG", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "LineageOSMicroG")
+			a.Upstream.Rom["LineageOSMicroG"] = &Item{}
+			a.Upstream.Rom["LineageOSMicroG"].Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := CarbonromLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"Carbonrom", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "Carbonrom")
+			a.Upstream.Rom["Carbonrom"] = &Item{}
+			a.Upstream.Rom["Carbonrom"].Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := ResurrectionRemixLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"ResurrectionRemix", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "ResurrectionRemix")
+			a.Upstream.Rom["ResurrectionRemix"] = &Item{}
+			a.Upstream.Rom["ResurrectionRemix"].Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := CrDroidLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"CrDroid", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "CrDroid")
+			a.Upstream.Rom["CrDroid"] = &Item{}
+			a.Upstream.Rom["CrDroid"].Href = h
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		h, err := EOSLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"e-OS", err}
+		}
+
+		if h != "" {
+			a.Mutex.Lock()
+			defer a.Mutex.Unlock()
+			a.Upstream.Romlist = append(a.Upstream.Romlist, "e-OS")
+			a.Upstream.Rom["e-OS"] = &Item{}
+			a.Upstream.Rom["e-OS"].Href = h
+		}
+	}()
+
+	go func() {
+		wg.Wait()
+		close(errs)
+	}()
+
+	for e := range errs {
+		// Only send error to sentry if it is something else than "not found" or "not available"
+		if !helpers.IsStringInSlice(strings.ToLower(e.Error.Error()), []string{"not available", "not found"}) {
+			logger.LogError("API-Server: Error retrieving latest available item from " + e.What + ":", e.Error)
+		}
+	}
+
+	// Push names of available roms to Archive romlist
+	for romname, _ := range a.Archive.Rom {
+		if romname == "LineageOSMicroG" || romname == "LineageOS" {
+			if helpers.IsStringInSlice("LineageOS", a.Archive.Romlist) {
+				continue
+			}
+			romname = "LineageOS"
+		}
+		a.Mutex.Lock()
+		a.Archive.Romlist = append(a.Archive.Romlist, romname)
+		a.Mutex.Unlock()
+	}
+
+	return nil
+}
+
 func (a *Available) Print() {
 	logger.Log("Upstream:")
 	logger.Log("  Roms:")
