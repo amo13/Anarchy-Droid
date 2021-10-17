@@ -620,9 +620,13 @@ func codenameToBrandCsv(codename string) (string, error) {
 	// Retry with codename suffixes if nothing was found
 	if len(matches) == 0 {
 		for _, suffix := range CodenameSuffixes {
-			matches, err = queryDeviceLookupCsvTable(codename + suffix, 2, 3)
+			matches_suffix, err := queryDeviceLookupCsvTable(codename + suffix, 2, 0)
 			if err != nil {
 				return "", err
+			}
+
+			if len(matches_suffix) > 0 {
+				matches = append(matches, matches_suffix...)
 			}
 		}
 	}
@@ -630,10 +634,10 @@ func codenameToBrandCsv(codename string) (string, error) {
 	matches = helpers.UniqueNonEmptyElementsOfSlice(matches)
 
 	if len(matches) == 0 {
-		return "", fmt.Errorf("not found")
+		return "", fmt.Errorf("Brand of " + codename + " not found")
 	} else if len(matches) == 1 {
 		return matches[0], nil
 	} else {
-		return "", fmt.Errorf("ambiguous")
+		return "", fmt.Errorf("Brand of " + codename + " is ambiguous")
 	}
 }
