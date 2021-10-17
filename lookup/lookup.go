@@ -438,6 +438,7 @@ func queryDeviceLookupCsvTable(item string, match_in_column int, lookup_from_col
 }
 
 // Returns error if ambiguous
+// examples: "arc", "MotoE2", "MotoG3"
 func modelToCodenameCsv(model string) (string, error) {
 	// Check if the given model name already is the codename
 	ic, err := IsCodename(model)
