@@ -66,6 +66,12 @@ func ModelToCodenameCandidatesForApi(model string) ([]string, error) {
 		return []string{}, err
 	}
 
+	// Do not lookup in the CSV if the yml has an entry
+	// In that case return this single codename in a slice
+	if y != "" {
+		return []string{y}, nil
+	}
+
 	c, err := modelToCodenameCandidatesCsv(model)
 	if err != nil {
 		return []string{}, err
