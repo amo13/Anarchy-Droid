@@ -58,6 +58,24 @@ func ModelToCodename(model string) (string, error) {
 	return y, nil
 }
 
+// Returns a slice of codename candidates for a given model
+// The returned slice may contain 0, 1 or more elements
+func ModelToCodenameCandidatesForApi(model string) ([]string, error) {
+	y, err := modelToCodenameYaml(model)
+	if err != nil {
+		return []string{}, err
+	}
+
+	c, err := modelToCodenameCandidatesCsv(model)
+	if err != nil {
+		return []string{}, err
+	}
+
+	matches := append([]string{y}, c...)
+
+	return helpers.UniqueNonEmptyElementsOfSlice(matches), nil
+}
+
 // Returns codename candidates from device lookup CSV
 // (Yaml table is unambiguous and takes precedence anyway)
 func ModelToCodenameCandidates(model string) ([]string, error) {
@@ -158,6 +176,26 @@ func CodenameToBrand(codename string) (string, error) {
 			logger.LogError("CodenameToBrand: unable to query ADB for device brand", err)
 			return "", err
 		}
+	}
+
+	return y, nil
+}
+
+// Try to lookup in yaml first and CSV then
+// Do not resort to the adb prop if unsuccessful
+func CodenameToBrandForApi(codename string) (string, error) {
+	y, err := codenameToBrandYaml(codename)
+	if err != nil {
+		return "", err
+	}
+
+	if y == "" {
+		c, err := codenameToBrandCsv(codename)
+		if err != nil {
+			return "", err
+		}
+
+		y = c
 	}
 
 	return y, nil
