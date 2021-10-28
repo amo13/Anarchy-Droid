@@ -90,7 +90,7 @@ func (d *Device) GetState() string {
 			logger.LogError("Cannot determine fastboot connection state", fmt.Errorf("unknown fastboot state"))
 		}
 	} else {
-		logger.LogError("Cannot determine ADB connection state", fmt.Errorf("unknown adb state"))
+		logger.LogError("Cannot determine ADB connection state", fmt.Errorf("unknown adb state: " + adb_state))
 	}
 
 	return "unknown"
