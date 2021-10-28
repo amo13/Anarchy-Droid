@@ -94,6 +94,8 @@ func State() string {
 
 	if strings.HasPrefix(stderr, "error: no device") {
 		return "disconnected"
+	} else if strings.HasPrefix(stderr, "error: device offline") {
+		return "disconnected"
 	} else if strings.HasPrefix(stderr, "error: insufficient permissions") {
 		return "unauthorized"
 	} else if strings.HasPrefix(stderr, "error: device unauthorized") {
