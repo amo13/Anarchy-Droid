@@ -58,6 +58,13 @@ func dlPlatformTools() error {
 		return err
 	}
 
+	if runtime.GOOS != "windows" {
+		_, stderr := helpers.Cmd("chmod +x bin/platform-tools/adb bin/platform-tools/fastboot")
+		if stderr != "" {
+			logger.LogError(stderr, fmt.Errorf("Failed to make the binaries executable"))
+		}
+	}
+
 	return nil
 }
 
@@ -85,6 +92,13 @@ func dlHeimdall() error {
 	}
 
 	logger.Log("Done downloading heimdall")
+
+	if runtime.GOOS != "windows" {
+		_, stderr := helpers.Cmd("chmod +x bin/heimdall/heimdall")
+		if stderr != "" {
+			logger.LogError(stderr, fmt.Errorf("Failed to make the binaries executable"))
+		}
+	}
 	
 	return nil
 }
