@@ -45,7 +45,7 @@ func main() {
 		// Either set environment and release here or set the SENTRY_ENVIRONMENT
 		// and SENTRY_RELEASE environment variables.
 		// Environment: "",
-		Release:     AppName + "@" + AppVersion,
+		Release: AppName + "@" + AppVersion,
 		// Enable printing of SDK debug messages.
 		// Useful when getting started or trying to figure something out.
 		Debug: false,
