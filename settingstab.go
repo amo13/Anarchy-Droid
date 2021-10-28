@@ -173,10 +173,11 @@ func userRomSelected(urc fyne.URIReadCloser, err error) {
 	romname, androidversion, err := get.GuessRomNameAndAndroidVersion(get.A1.User.Rom.Filename)
 	if err != nil {
 		logger.LogError("Unable to guess rom name and android version of " + get.A1.User.Rom.Filename + ":", err)
-		return
+		// return here or move on?
+	} else {
+		get.A1.User.Rom.Name = romname
+		get.A1.User.Rom.Android_version = androidversion
 	}
-	get.A1.User.Rom.Name = romname
-	get.A1.User.Rom.Android_version = androidversion
 
 	registerRomChoice()
 }
