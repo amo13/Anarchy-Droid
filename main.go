@@ -91,6 +91,15 @@ func main() {
 	}
 	os.Chdir(AppName)
 
+	// Create log directory if it does not exist
+	_, err = os.Stat("log")
+	if os.IsNotExist(err) {
+		err = os.Mkdir("log", 0755)
+	    if err != nil {
+	        logger.LogError("Unable to create log directory:", err)
+	    }
+	}
+
 	go func() {
 		go logger.Report(map[string]string{"progress":"Setup App"})
 		_, err := initApp()

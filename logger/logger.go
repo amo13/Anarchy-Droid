@@ -106,15 +106,6 @@ func session() map[string]string {
 	// Create a session file if it does not exist
 	_, err := os.Stat("log/session")
 	if os.IsNotExist(err) {
-		// Create log directory if it does not exist
-		_, err = os.Stat("log")
-		if os.IsNotExist(err) {
-			err = os.Mkdir("log", 0755)
-		    if err != nil {
-		        LogError("Unable to create log directory:", err)
-		    }
-		}
-
 		rand.Seed(time.Now().UnixNano())
 		sessionId := randSeq(16)
 
