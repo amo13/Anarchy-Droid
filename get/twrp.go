@@ -172,7 +172,12 @@ func TwrpImgParseVersion(filename string) (string, error) {
 	if len(parts) >= 2 {
 		return parts[1], nil
 	} else {
-		return "", fmt.Errorf("unable to parse version")
+		v := helpers.GenericParseVersion(filename)
+		if v == "" {
+			return "", fmt.Errorf("unable to parse TWRP image file version")
+		} else {
+			return v, nil
+		}
 	}
 }
 
@@ -181,6 +186,11 @@ func TwrpZipParseVersion(filename string) (string, error) {
 	if len(parts) >= 3 {
 		return parts[2], nil
 	} else {
-		return "", fmt.Errorf("unable to parse TWRP version")
+		v := helpers.GenericParseVersion(filename)
+		if v == "" {
+			return "", fmt.Errorf("unable to parse TWRP zip file version")
+		} else {
+			return v, nil
+		}
 	}
 }
