@@ -111,7 +111,7 @@ func initApp() (bool, error) {
 				Icon_uptodate.SetResource(theme.ConfirmIcon())
 			} else {
 				Icon_uptodate.SetResource(theme.CancelIcon())
-				info_dialog := dialog.NewInformation("Please download the latest version of", AppName + ". The download page will open once you close the application.", w)
+				info_dialog := dialog.NewInformation("A new version has been released!", "Please download the latest version of" + AppName + ". The download page will open once you close the application.", w)
 				info_dialog.SetOnClosed(func() { OpenWebBrowser("https://github.com/amo13/Anarchy-Droid/releases/latest"); a.Quit() } )
 				info_dialog.Show()
 				return false, err
