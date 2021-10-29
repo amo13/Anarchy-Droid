@@ -105,7 +105,7 @@ func displayFileNameAndAndroidVersion() {
 			Lbl_android_version.SetText("Android " + get.A1.User.Rom.Android_version)			
 		} else {
 			Lbl_android_version.SetText("")
-			Select_opengapps_version.Selected = Select_opengapps_version.PlaceHolder
+			Select_opengapps_version.ClearSelected()
 		}
 	} else {
 		Lbl_user_rom.SetText("No rom available")
@@ -255,16 +255,20 @@ func selectOpenGappsVersion() {
 		Select_opengapps_version.Options = versionkeys
 
 		// Select proper OpenGapps version if available
-		version, err := formatToOpenGappsAndroidVersion(get.A1.User.Rom.Android_version)
-		if err != nil {
-			logger.LogError("Unable to format " + get.A1.User.Rom.Android_version + " to OpenGapps android version format:", err)
-			Select_opengapps_version.SetSelected(Select_opengapps_version.PlaceHolder)
-		} else {
-			if helpers.IsStringInSlice(version, Select_opengapps_version.Options) {
-				Select_opengapps_version.SetSelected(version)
+		if get.A1.User.Rom.Android_version != "" {
+			version, err := formatToOpenGappsAndroidVersion(get.A1.User.Rom.Android_version)
+			if err != nil {
+				logger.LogError("Unable to format " + get.A1.User.Rom.Android_version + " to OpenGapps android version format:", err)
+				Select_opengapps_version.ClearSelected()
 			} else {
-				Select_opengapps_version.SetSelected(Select_opengapps_version.PlaceHolder)
+				if helpers.IsStringInSlice(version, Select_opengapps_version.Options) {
+					Select_opengapps_version.SetSelected(version)
+				} else {
+					Select_opengapps_version.ClearSelected()
+				}
 			}
+		} else {
+			Select_opengapps_version.ClearSelected()
 		}
 	}
 }

@@ -182,11 +182,11 @@ func deviceRecognized() {
 			if get.A1.User.Twrp.Img.Href != "" {	// got TWRP image
 				if get.A1.User.Rom.Href != "" {	// got TWRP image and rom
 					// If OpenGapps is selected, make sure a version is also selected
-					if Select_gapps.Selected == "OpenGapps" &&
-					Select_opengapps_version.Selected != "" &&
+					if Select_gapps.Selected != "OpenGapps" ||
+					(Select_opengapps_version.Selected != "" &&
 					Select_opengapps_version.Selected != Select_opengapps_version.PlaceHolder &&
 					Select_opengapps_variant.Selected != "" &&
-					Select_opengapps_variant.Selected != Select_opengapps_variant.PlaceHolder {
+					Select_opengapps_variant.Selected != Select_opengapps_variant.PlaceHolder) {
 						if Chk_gotbackups.Checked {
 							Btn_start.Enable()
 						} else {
@@ -216,12 +216,28 @@ func deviceRecognized() {
 		} else if device.D1.IsUnlocked {	// already unlocked
 			if get.A1.User.Twrp.Img.Href != "" {	// got TWRP image
 				if get.A1.User.Rom.Href != "" {	// got TWRP image and rom
-					if Chk_gotbackups.Checked {
-						Btn_start.Enable()
-					} else {
+					// if Chk_gotbackups.Checked {
+					// 	Btn_start.Enable()
+					// } else {
+					// 	Btn_start.Disable()
+					// }
+					// Lbl_instructions.SetText("Ready!")
+					// If OpenGapps is selected, make sure a version is also selected
+					if Select_gapps.Selected != "OpenGapps" ||
+					(Select_opengapps_version.Selected != "" &&
+					Select_opengapps_version.Selected != Select_opengapps_version.PlaceHolder &&
+					Select_opengapps_variant.Selected != "" &&
+					Select_opengapps_variant.Selected != Select_opengapps_variant.PlaceHolder) {
+						if Chk_gotbackups.Checked {
+							Btn_start.Enable()
+						} else {
+							Btn_start.Disable()
+						}
+						Lbl_instructions.SetText("Ready!")
+					} else {	// otherwise prompt user to select the correct OpenGapps version
 						Btn_start.Disable()
+						Lbl_instructions.SetText("Please set the OpenGapps version to the Android version of the rom you wish to install.")
 					}
-					Lbl_instructions.SetText("Ready!")
 				} else {	// got TWRP image but missing rom
 					Btn_start.Disable()
 					Lbl_instructions.SetText("Missing rom.\nIf you've got one, you can select it in the settings tab.")
