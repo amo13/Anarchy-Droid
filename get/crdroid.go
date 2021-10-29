@@ -122,14 +122,14 @@ func CrDroidLatestAvailableHref(codename string) (string, error) {
 		// Follow redirects to the actual file URL from a mirror
 		resp, err := http.Head(latest_file_available)
 		if err != nil {
-			logger.Log("Retrying to follow CrDroid Sourceforge redirects to download mirror...")
+			logger.Log("Retrying to follow CrDroid Sourceforge redirects to download mirror...", err.Error())
 		} else {
 			dl_url = resp.Request.URL.String()
 			break
 		}
 	}
 
-	if dl_url == "" || !strings.HasSuffix(dl_url, ".zip") {
+	if dl_url == "" || (!strings.HasSuffix(dl_url, ".zip") && !strings.Contains(dl_url, ".zip?")) {
 		logger.Log("Unable to follow CrDroid sourceforge redirects to mirror")
 		return "", fmt.Errorf("unable to follow sourceforge redirects to mirror")
 	}
