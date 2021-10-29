@@ -26,7 +26,7 @@ func adb_command() string {
 		} else if Sudopw == "" {
 			return "sudo bin/platform-tools/adb"
 		} else {
-			return "echo " + Sudopw + " | sudo -S bin/platform-tools/adb"
+			return "printf " + Sudopw + " | sudo -S bin/platform-tools/adb"
 		}
 	}
 }

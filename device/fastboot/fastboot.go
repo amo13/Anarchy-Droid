@@ -25,7 +25,7 @@ func fastboot_command() string {
 		} else if Sudopw == "" {
 			return "sudo bin/platform-tools/fastboot"
 		} else {
-			return "echo " + Sudopw + " | sudo -S bin/platform-tools/fastboot"
+			return "printf " + Sudopw + " | sudo -S bin/platform-tools/fastboot"
 		}
 	}
 }

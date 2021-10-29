@@ -24,7 +24,7 @@ func heimdall_command() string {
 		} else if Sudopw == "" {
 			return "sudo bin/heimdall/heimdall"
 		} else {
-			return "echo " + Sudopw + " | sudo -S bin/heimdall/heimdall"
+			return "printf " + Sudopw + " | sudo -S bin/heimdall/heimdall"
 		}
 	}
 }

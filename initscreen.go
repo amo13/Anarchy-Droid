@@ -12,6 +12,7 @@ import(
 	"github.com/amo13/anarchy-droid/get"
 	"github.com/amo13/anarchy-droid/device"
 	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
 	"github.com/amo13/anarchy-droid/device/adb"
 	"github.com/amo13/anarchy-droid/device/fastboot"
 	"github.com/amo13/anarchy-droid/device/heimdall"
@@ -171,6 +172,21 @@ func initApp() (bool, error) {
 }
 
 func finishInitApp() (bool, error) {
+	// Detect if the given sudo password is wrong and exit in that case
+	if adb.Sudopw != "" {
+		_, stderr := helpers.Cmd("printf " + adb.Sudopw + " | sudo -S ls")
+		if strings.Contains(stderr, "incorrect password") {
+			logger.Log("sudo password seems to be wrong")
+			info_dialog := dialog.NewError(fmt.Errorf("The sudo password seems to be wrong."), w)
+			info_dialog.SetOnClosed(func() {
+				logger.Log("Exiting...")
+				a.Quit()
+			} )
+			info_dialog.Show()
+			return false, fmt.Errorf("wrong sudo password")
+		}
+	}
+
 	// Restart the ADB server (as root on linux)
 	err := adb.KillServer()
 	if err != nil && err.Error() != "connection refused" {
