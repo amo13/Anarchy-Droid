@@ -126,7 +126,7 @@ func (d *Device) HandleStateRequest(req_state string) {
 		// Do nothing: simply wait for sideload to finish
 	} else {
 		err := d.Reboot(req_state)
-		if err != nil {
+		if err != nil && err.Error() != "Cannot reboot device right now" {
 			logger.LogError("Unable to reboot device to " + req_state + ":", err)
 		}
 	}
