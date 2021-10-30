@@ -28,6 +28,7 @@ func NewDevice() Device {
 		Scanning: false,
 		Model: "",
 		Codename: "",
+		Codename_ambiguous: false,
 		Brand: "",
 		IsBrandUnlockable: false,
 		Name: "",
@@ -54,6 +55,7 @@ type Device struct {
 	Scanning bool
 	Model string
 	Codename string
+	Codename_ambiguous bool
 	Brand string
 	IsBrandUnlockable bool
 	Name string

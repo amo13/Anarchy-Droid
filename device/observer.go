@@ -132,7 +132,13 @@ func (d *Device) ReadMissingProps() {
 		if d.Model != "" {
 			d.Codename, err = lookup.ModelToCodename(d.Model)
 			if err != nil {
-				logger.LogError("Unable to lookup model to codename:", err)
+				if strings.Contains(err.Error(), "ambiguous") {
+					d.Codename_ambiguous = true
+				} else {
+					logger.LogError("Unable to lookup model to codename:", err)
+				}
+			} else {
+				d.Codename_ambiguous = false
 			}
 		} else if len(d.AdbProps) > 0 {
 			d.Codename = adb.CodenameFromPropMap(d.AdbProps)

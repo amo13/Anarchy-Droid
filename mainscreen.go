@@ -7,15 +7,19 @@ import(
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/container"
 
 	"github.com/amo13/anarchy-droid/get"
 	"github.com/amo13/anarchy-droid/device"
+	"github.com/amo13/anarchy-droid/lookup"
 	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/helpers"
 )
 
 var last_codename string	// Used in IsNewDevice() to help call ReloadRoms() when a new device (codename) is connected
+var Candidates *widget.Select 	// Used for user prompt in ambiguous cases for codename
 
 func mainScreen() fyne.CanvasObject {
 	initAllWidgets()
@@ -39,12 +43,16 @@ func initAllWidgets() {
 	initStarttabWidgets()
 	initSettingstabWidgets()
 	initAdvancedtabWidgets()
+
+	Candidates = widget.NewSelect([]string{}, func(string){})
 }
 
 func setDefaults() {
 	setDefaultsStarttab()
 	setDefaultsSettingstab()
 	setDefaultsAdvancedtab()
+
+	Candidates.PlaceHolder = "Select your device"
 }
 
 // Helper function to open a web browser at given url
@@ -112,6 +120,44 @@ func updateMainScreen() {
 	}
 
 	if device.D1.State != "disconnected" {
+		if device.D1.Codename_ambiguous {
+			// Already reset the ambuguity marker to prevent
+			// further dialogs from popping up
+			device.D1.Codename_ambiguous = false
+
+			// Prompt the user to select their device model
+			cc, err := lookup.ModelToCodenameCandidates(device.D1.Model)
+			if err != nil {
+				logger.LogError("Error retrieving codename candidates from model " + device.D1.Model, err)
+				return
+			}
+
+			mc := []string{}
+
+			// Populate model candidates slice
+			// for _, codename := range cc {
+				models, err := lookup.CodenamesToModels(cc)
+				if err != nil {
+					logger.LogError("Failed to convert codenames to models.", err)
+				}
+
+				for _, model := range models {
+					mc = append(mc, model)
+				}
+			// }
+
+			Candidates.Options = helpers.UniqueNonEmptyElementsOfSlice(mc)
+
+			candidates_dialog := dialog.NewCustom("Select your device model", "OK", Candidates, w)
+			candidates_dialog.SetOnClosed(func() {
+				device.D1.Model = Candidates.Selected
+				device.D1.ReadMissingProps()
+			})
+			candidates_dialog.Show()
+
+			return
+		}
+
 		if device.D1.Model != "" {
 			Lbl_device_detection.SetText(device.D1.Model + " connected!")
 		} else {
