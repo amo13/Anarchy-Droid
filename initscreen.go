@@ -177,12 +177,12 @@ func finishInitApp() (bool, error) {
 		_, stderr := helpers.Cmd("printf " + adb.Sudopw + " | sudo -S ls")
 		if strings.Contains(stderr, "incorrect password") {
 			logger.Log("sudo password seems to be wrong")
-			info_dialog := dialog.NewError(fmt.Errorf("The sudo password seems to be wrong."), w)
-			info_dialog.SetOnClosed(func() {
+			wrong_sudo_pw_dialog := dialog.NewError(fmt.Errorf("The sudo password seems to be wrong."), w)
+			wrong_sudo_pw_dialog.SetOnClosed(func() {
 				logger.Log("Exiting...")
 				a.Quit()
-			} )
-			info_dialog.Show()
+			})
+			wrong_sudo_pw_dialog.Show()
 			return false, fmt.Errorf("wrong sudo password")
 		}
 	}
