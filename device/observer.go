@@ -252,14 +252,17 @@ func (d *Device) isSameDevice(state string) bool {
 		model, err := adb.Model()
 		if err != nil {
 			logger.LogError("Unable to read model from adb:", err)
-			return false
+			return true
 		}
 
 		if model != d.Model {
 			codename, err := lookup.ModelToCodename(model)
 			if err != nil {
-				logger.LogError("Unable to lookup model to codename:", err)
-				return false
+				if err.Error() != "ambiguous" {
+					logger.LogError("Unable to lookup model to codename:", err)
+				}
+
+				return true
 			}
 
 			if codename != "" && codename != d.Codename {
@@ -272,7 +275,7 @@ func (d *Device) isSameDevice(state string) bool {
 			codename, err := adb.Codename()
 			if err != nil {
 				logger.LogError("Unable to read codename from adb:", err)
-				return false
+				return true
 			}
 
 			if d.Codename == codename {
@@ -285,14 +288,15 @@ func (d *Device) isSameDevice(state string) bool {
 		model, err := fastboot.Model()
 		if err != nil {
 			logger.LogError("Unable to read model from fastboot:", err)
-			return false
+			return true
 		}
 
 		if model != d.Model {
 			codename, err := lookup.ModelToCodename(model)
-			if err != nil {
+			if err.Error() != "ambiguous" {
 				logger.LogError("Unable to lookup model to codename:", err)
-				return false
+			} else {
+				return true
 			}
 
 			if codename != "" && codename != d.Codename {
