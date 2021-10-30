@@ -13,6 +13,7 @@ import (
 
 var Sudopw string = ""
 var Nosudo bool = false
+var Simulation bool = false
 
 func adb_command() string {
 	switch runtime.GOOS {
@@ -89,6 +90,10 @@ func KillServer() error {
 }
 
 func State() string {
+	if Simulation {
+		return "simulation"
+	}
+	
 	// Call helpers.Cmd because we need stdout and stderr
 	stdout, stderr := helpers.Cmd(adb_command() + " get-state")
 

@@ -158,7 +158,7 @@ func updateMainScreen() {
 		Lbl_instructions.SetText("Device in sideload mode.\n\nPlease wait for it to finish.")
 	case "heimdall", "fastboot":
 		Lbl_instructions.SetText("Please reboot your device to Android.")
-	case "recovery", "android":
+	case "recovery", "android", "simulation":
 		deviceRecognized()
 	default:
 		Lbl_instructions.SetText("Unknown device connection state.")

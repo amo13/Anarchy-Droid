@@ -69,6 +69,19 @@ type Device struct {
 	FastbootVars map[string]string
 }
 
+func (d *Device) Test(model string) {
+	d.ObserveMe = false
+	d.State = "simulation"
+	adb.Simulation = true
+	d.Model = model
+	d.Arch = "simulation"
+	d.Imei = "simulation"
+	d.IsAB_checked = true
+	d.IsUnlocked = true
+
+	d.ReadMissingProps()
+}
+
 func (d *Device) GetState() string {
 	adb_state := adb.State()
 	if helpers.IsStringInSlice(adb_state, []string{"android","recovery","unauthorized","sideload","booting"}) {
