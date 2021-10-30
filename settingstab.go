@@ -166,12 +166,11 @@ func userRomSelected(urc fyne.URIReadCloser, err error) {
 
 	get.A1.User.Rom = &get.Item{}	// Reset the rom item to remove previous item content
 	Lbl_user_rom.SetText(helpers.ExtractFileNameFromHref(urc.URI().String()))
-	get.A1.User.Rom.Href = urc.URI().String()
+	get.A1.User.Rom.Href = urc.URI().Path()
 	get.A1.User.Rom.Filename = helpers.ExtractFileNameFromHref(urc.URI().String())
 	romname, androidversion, err := get.GuessRomNameAndAndroidVersion(get.A1.User.Rom.Filename)
 	if err != nil {
 		logger.LogError("Unable to guess rom name and android version of " + get.A1.User.Rom.Filename + ":", err)
-		// return here or move on?
 	} else {
 		get.A1.User.Rom.Name = romname
 		get.A1.User.Rom.Android_version = androidversion
