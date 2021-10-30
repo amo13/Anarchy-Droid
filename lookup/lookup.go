@@ -474,7 +474,8 @@ func modelToCodenameCsv(model string) (string, error) {
 	// if there are still multiple codename candidates
 	if result == "" {
 		matchedmatches := make([]string, 0)
-		if helpers.IsStringInSlice(adb.State(), []string{"android", "recovery"}) {
+		adb_state := adb.State()
+		if helpers.IsStringInSlice(adb_state, []string{"android", "recovery"}) {
 			// look for a match in the ADB props
 			props, err := adb.GetPropMap()
 			if err != nil {
@@ -531,7 +532,11 @@ func modelToCodenameCsv(model string) (string, error) {
 	}
 
 	if result == "" {
-		return "", fmt.Errorf("Unable to lookup codename for model %s with CSV", model)
+		if len(matches) > 1 {
+			return "", fmt.Errorf("ambiguous")
+		} else {
+			return "", fmt.Errorf("Unable to lookup codename for model %s with CSV", model)
+		}
 	} else {
 		return result, nil
 	}
@@ -542,6 +547,13 @@ func modelToCodenameCandidatesCsv(model string) ([]string, error) {
 	matches, err := queryDeviceLookupCsvTable(model, 3, 2)
 	if err != nil {
 		return []string{}, err
+	}
+
+	if len(matches) == 0 {
+		matches, err = queryDeviceLookupCsvTable(model, 1, 2)
+		if err != nil {
+			return []string{}, err
+		}
 	}
 
 	// Remove trailing _ds, _cdma and similar from the codenames.
