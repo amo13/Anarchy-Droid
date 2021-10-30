@@ -1,7 +1,7 @@
-Website = "https://anarchy-droid.org"
+Website = "https://anarchy-droid.com"
 
 [Details]
 Name = "Anarchy-Droid"
 ID = "org.droid.anarchy"
 Icon = "icon.png"
-Version = "0.9.10"
+Version = "0.9.11"
