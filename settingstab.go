@@ -34,9 +34,7 @@ func changedRom(rom string) {
 }
 
 func registerRomChoice() {
-	if Chk_user_rom.Checked {
-
-	} else {
+	if !Chk_user_rom.Checked && !(Select_rom.Selected == "" || Select_rom.Selected == Select_rom.PlaceHolder) {
 		if Radio_rom_source.Selected == "Official Releases" {
 			if Select_gapps.Selected == "MicroG" && Select_rom.Selected == "LineageOS" && get.A1.Upstream.Rom["LineageOSMicroG"] != nil {
 				get.A1.User.Rom = get.A1.Upstream.Rom["LineageOSMicroG"]
