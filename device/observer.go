@@ -95,6 +95,9 @@ func (d *Device) StartOver() {
 	// Read ADB props and fastboot vars if not done yet
 	if helpers.IsStringInSlice(D1.GetState(), []string{"android", "recovery", "fastboot"}) {
 		d.ReadMissingProps()
+		if d.Model != "" || d.Codename != "" {
+			logger.Report(map[string]string{"progress":"Device connected: " + d.Model + " (" + d.Codename + ")"})
+		}
 	}
 }
 

@@ -498,7 +498,7 @@ func finishInstallation() error {
 	}
 
 	logger.Log("Finished.")
-	go logger.Report(map[string]string{"progress":"Finished"})
+	go logger.Report(map[string]string{"progress":"Finished successfully"})
 	Lbl_progressbar.SetText("")
 	Progressbar.Stop()
 	Lbl_flashing_instructions.SetText("Installation finished!\n\nNotice: The first boot will take longer.")
