@@ -319,6 +319,8 @@ func selectGappsChanged(value string) {
 	case "OpenGapps":
 		Chk_playstore.SetChecked(true)
 		Chk_playstore.Disable()
+		Chk_aurora.SetChecked(false)
+		Chk_aurora.Disable()
 		Select_opengapps_variant.Enable()
 		Select_opengapps_version.Enable()
 		Chk_sigspoof.SetChecked(false)
@@ -344,6 +346,8 @@ func selectGappsChanged(value string) {
 	case "MicroG":
 		Chk_playstore.SetChecked(false)
 		Chk_playstore.Enable()
+		Chk_aurora.SetChecked(true)
+		Chk_aurora.Enable()
 		Select_opengapps_variant.Disable()
 		Select_opengapps_version.Disable()
 		Chk_sigspoof.SetChecked(true)
@@ -369,6 +373,8 @@ func selectGappsChanged(value string) {
 	case "Nothing":
 		Chk_playstore.SetChecked(false)
 		Chk_playstore.Disable()
+		Chk_aurora.SetChecked(false)
+		Chk_aurora.Disable()
 		Select_opengapps_variant.Disable()
 		Select_opengapps_version.Disable()
 		Chk_sigspoof.SetChecked(false)

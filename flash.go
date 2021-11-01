@@ -625,15 +625,25 @@ func downloadFiles() (map[string]string, error) {
 	if Select_gapps.Selected == "OpenGapps" {
 		// PixelExperience rom has Gapps preinstalled
 		if get.A1.User.Rom.Name != "PixelExperience" {
+			gapps_filename, err := get.OpenGappsLatestAvailableFileName(device.D1.Arch, Select_opengapps_version.Selected, Select_opengapps_variant.Selected)
+			if err != nil {
+				logger.LogError("Failed to retrieve the name of the OpenGapps file to be downloaded.", err)
+				return map[string]string{}, err
+			}
+
+			gapps_path = "flash/" + gapps_filename
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
 
-				gapps_filename, err := get.OpenGapps(device.D1.Arch, Select_opengapps_version.Selected, Select_opengapps_variant.Selected)
+				gapps_filename_local, err := get.OpenGapps(device.D1.Arch, Select_opengapps_version.Selected, Select_opengapps_variant.Selected)
 				if err != nil {
 					errs <- RetrievalError{"OpenGapps", "Download link returned by API", err}
 				}
-				gapps_path = "flash/" + gapps_filename
+
+				if gapps_filename != gapps_filename_local {
+					logger.LogError("get.OpenGappsLatestAvailableFileName does not return the same file name as get.OpenGapps", fmt.Errorf("Gapps file name mismatch"))
+				}
 			}()
 		}
 	} else if Select_gapps.Selected == "MicroG" {
@@ -715,7 +725,7 @@ func downloadFiles() (map[string]string, error) {
 	}
 
 	gsyncswype_path := ""
-	if Chk_gsync.Checked || Chk_swype.Checked {
+	if (Chk_gsync.Checked || Chk_swype.Checked) && Select_gapps.Selected != "OpenGapps" {
 		gsyncswype_path = "flash/" + get.A1.Upstream.NanoDroid["Google"].Filename
 		wg.Add(1)
 		go func() {
@@ -767,20 +777,28 @@ func createNanoDroidSetup() map[string]string {
 
 	// For the values, refer to the NanoDroid documentation:
     // https://gitlab.com/Nanolx/NanoDroid/-/blob/master/doc/AlterInstallation.md
-	if Select_gapps.Selected == "MicroG" { setup["microg"] = "1" }
-    if Select_gapps.Selected == "MicroG" { setup["mapsv1"] = "1" }
-    if Chk_fdroid.Checked { setup["fdroid"] = "1" }
-    if Chk_gsync.Checked { setup["gsync"] = "1" }
-    if Chk_swype.Checked { setup["swipe"] = "1" }
-    if Chk_playstore.Checked && Chk_aurora.Checked {
-    	setup["play"] = "30"
-    } else if !Chk_playstore.Checked && Chk_aurora.Checked {
-    	setup["play"] = "21"
-    } else if Chk_playstore.Checked && !Chk_aurora.Checked {
-    	setup["play"] = "10"
+	if Select_gapps.Selected == "MicroG" { setup["microg"] = "1" } else { setup["microg"] = "0" }
+    if Select_gapps.Selected == "MicroG" { setup["mapsv1"] = "1" } else { setup["mapsv1"] = "0" }
+    if Chk_fdroid.Checked { setup["fdroid"] = "1" } else { setup["fdroid"] = "0" }
+    if Chk_gsync.Checked && Select_gapps.Selected != "OpenGapps" { setup["gsync"] = "1" } else { setup["gsync"] = "0" }
+    if Chk_swype.Checked && Select_gapps.Selected != "OpenGapps" { setup["swipe"] = "1" } else { setup["swipe"] = "0" }
+    if Select_gapps.Selected == "OpenGapps" {
+    	if Chk_aurora.Checked {
+    		setup["play"] = "20"
+    	} else {
+	    	setup["play"] = "00"
+	    }
     } else {
-    	setup["play"] = "01"
-    }
+    	if Chk_playstore.Checked && Chk_aurora.Checked {
+	    	setup["play"] = "30"
+	    } else if !Chk_playstore.Checked && Chk_aurora.Checked {
+	    	setup["play"] = "21"
+	    } else if Chk_playstore.Checked && !Chk_aurora.Checked {
+	    	setup["play"] = "10"
+	    } else {
+	    	setup["play"] = "01"
+	    }
+	}
 
     return setup
 }
