@@ -167,8 +167,8 @@ func OpenGappsLatestAvailableHref(arch string, android_version string, variant s
 		}
 	}
 
-	if dl_url == "" || !strings.HasSuffix(dl_url, ".zip") {
-		logger.Log("Unable to follow sourceforge redirects to mirror")
+	if dl_url == "" || (!strings.HasSuffix(dl_url, ".zip") && !strings.Contains(dl_url, ".zip?")) {
+		logger.Log("Unable to follow OpenGapps sourceforge redirects to mirror")
 		return "", fmt.Errorf("unable to follow sourceforge redirects to mirror")
 	}
 
