@@ -345,7 +345,6 @@ func SendNanodroidSetup(setup map[string]string) error {
 
     // Write the file
     file.WriteString("nanodroid_microg=" + setup["microg"] + "\n")
-    file.WriteString("nanodroid_gmscore=" + setup["gmscore"] + "\n")
     file.WriteString("nanodroid_fdroid=" + setup["fdroid"] + "\n")
     file.WriteString("nanodroid_apps=" + setup["apps"] + "\n")
     file.WriteString("nanodroid_play=" + setup["play"] + "\n")
