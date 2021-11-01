@@ -374,13 +374,13 @@ func installOnAB() error {
 		if !Chk_skipwipedata.Checked {
 			err := device.D1.FlashRom(Files["rom"], "clean")
 			if err != nil {
-				logger.LogError("Error clean-wiping device or flashing rom " + Files["gapps"] + ":", err)
+				logger.LogError("Error clean-wiping device or flashing rom " + Files["rom"] + ":", err)
 				return err
 			}
 		} else {
 			err := device.D1.FlashRom(Files["rom"], "dirty")
 			if err != nil {
-				logger.LogError("Error dirty-wiping device or flashing rom " + Files["gapps"] + ":", err)
+				logger.LogError("Error dirty-wiping device or flashing rom " + Files["rom"] + ":", err)
 				return err
 			}
 		}
