@@ -70,12 +70,16 @@ func (d *Device) doObservation(last_state string) string {
 }
 
 func (d *Device) changeDetected(new_state string) {
+	need_report := false
+
 	logger.Log("Device connection update:", new_state)
 
 	// Clear device info and start anew if a new device has been connected
 	if !d.Flashing && !d.isSameDevice(new_state) && helpers.IsStringInSlice(new_state, []string{"android", "recovery", "fastboot"}) {
 		logger.Log("New device detected, clearing and starting anew.")
 		d.StartOver()
+
+		need_report = true
 	}
 
 	// Prepend new state to States_history and save current state
@@ -85,6 +89,9 @@ func (d *Device) changeDetected(new_state string) {
 	// Read ADB props and fastboot vars if not done yet
 	if helpers.IsStringInSlice(new_state, []string{"android", "recovery", "fastboot"}) {
 		d.ReadMissingProps()
+		if need_report {
+			logger.Report(map[string]string{"progress":"Device connected: " + D1.Model + " / " + D1.Codename})
+		}
 	}
 }
 
@@ -94,10 +101,7 @@ func (d *Device) StartOver() {
 
 	// Read ADB props and fastboot vars if not done yet
 	if helpers.IsStringInSlice(D1.GetState(), []string{"android", "recovery", "fastboot"}) {
-		d.ReadMissingProps()
-		if d.Model != "" || d.Codename != "" {
-			logger.Report(map[string]string{"progress":"Device connected: " + d.Model + " (" + d.Codename + ")"})
-		}
+		D1.ReadMissingProps()
 	}
 }
 
