@@ -1,0 +1,7 @@
+# Description of how to reboot manually to bootloader/fastboot/download
+---
+samsung: "Press and hold the VOLUME-DOWN + HOME + POWER buttons on your device and follow the instructions on your device screen to enter download mode (for example confirm with VOL-UP)."
+motorola: "Press and hold the VOLUME-DOWN + POWER buttons on your device to start it in bootloader/fastboot mode."
+oneplus: "Press and hold the VOLUME-UP + POWER buttons on your device to start it in bootloader/fastboot mode."
+sony: "Press and hold the VOLUME-UP button and connect your device with USB while it is turned off to start it in bootloader/fastboot mode. The LED should turn blue."
+nvidia: "Press and hold the HOME + BACK + POWER buttons on your device to start it in bootloader/fastboot mode"
