@@ -43,7 +43,8 @@ func initAllWidgets() {
 	initStarttabWidgets()
 	initSettingstabWidgets()
 	initAdvancedtabWidgets()
-
+	initHelptabWidgets()
+	// For device selection dialog:
 	Candidates = widget.NewSelect([]string{}, func(string){})
 }
 
@@ -51,7 +52,8 @@ func setDefaults() {
 	setDefaultsStarttab()
 	setDefaultsSettingstab()
 	setDefaultsAdvancedtab()
-
+	setDefaultsHelptab()
+	// For device selection dialog:
 	Candidates.PlaceHolder = "Select your device"
 }
 
