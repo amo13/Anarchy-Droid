@@ -7,7 +7,6 @@ import(
 	"github.com/amo13/anarchy-droid/device/twrp"
 	"github.com/amo13/anarchy-droid/get"
 
-	"os"
 	"fmt"
 	"sync"
 	"time"
