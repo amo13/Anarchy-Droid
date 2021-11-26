@@ -404,10 +404,7 @@ func (d *Device) InstallDriversWithZadig() error {
 		return err
 	}
 
-	os.Chdir("bin")
-	defer os.Chdir("..")
-
-	stdout, stderr := helpers.Cmd(`Powershell -Command "& { Start-Process \"zadig.exe\" -Verb RunAs }`)
+	stdout, stderr := helpers.Cmd(`cmd /C "bin\zadig.exe"`)
 	logger.Log("Zadig stdout:", stdout)
 	logger.LogError("Zadig stderr:", fmt.Errorf(stderr))
 
@@ -451,10 +448,7 @@ func (d *Device) InstallUniversalDrivers() error {
 		return err
 	}
 
-	os.Chdir("bin")
-	defer os.Chdir("..")
-
-	stdout, stderr := helpers.Cmd(`Powershell -Command "& { Start-Process \"UniversalAdbDriverSetup.msi\" -Verb RunAs }`)
+	stdout, stderr := helpers.Cmd(`cmd /C msiexec /a "bin\UniversalAdbDriverSetup.msi"`)
 	logger.Log("UniversalAdbDriverSetup stdout:", stdout)
 	logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
 
