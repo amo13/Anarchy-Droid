@@ -49,11 +49,11 @@ func initStarttabWidgets() {
 }
 
 func setDefaultsStarttab() {
-	Lbl_device_detection.Text = "No device detected"
+	Lbl_device_detection.SetText("No device detected")
 	Lbl_device_detection.Alignment = fyne.TextAlignCenter
-	Lbl_brand_codename.Text = ""
+	Lbl_brand_codename.SetText("")
 	Lbl_brand_codename.Alignment = fyne.TextAlignCenter
-	Lbl_instructions.Text = initial_instructions
+	Lbl_instructions.SetText(initial_instructions)
 	Btn_start.Disable()
 }
 
