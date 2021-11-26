@@ -123,7 +123,7 @@ func updateMainScreen() {
 
 	if device.D1.State != "disconnected" {
 		if device.D1.Codename_ambiguous {
-			// Already reset the ambuguity marker to prevent
+			// Already reset the ambiguity marker to prevent
 			// further dialogs from popping up
 			device.D1.Codename_ambiguous = false
 
