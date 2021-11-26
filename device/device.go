@@ -130,12 +130,7 @@ func (d *Device) Reboot(target string) (err error) {
 	return err
 }
 
-func (d *Device) HandleStateRequest(req_state string) {
-	if !d.Flashing {
-		logger.Log("Skipped device state request to " + req_state + " because the user cancelled flashing")
-		return
-	}
-	
+func (d *Device) HandleStateRequest(req_state string) {	
 	if req_state == "sideload" && d.State == "recovery" {
 		err := twrp.OpenSideload()
 		if err != nil {
