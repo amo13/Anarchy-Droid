@@ -448,7 +448,7 @@ func (d *Device) InstallUniversalDrivers() error {
 		return err
 	}
 
-	stdout, stderr := helpers.Cmd(`cmd /C msiexec /a "bin\UniversalAdbDriverSetup.msi"`)
+	stdout, stderr := helpers.Cmd(`bin\UniversalAdbDriverSetup.msi`)
 	logger.Log("UniversalAdbDriverSetup stdout:", stdout)
 	logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
 
