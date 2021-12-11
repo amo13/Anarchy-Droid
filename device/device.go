@@ -7,6 +7,7 @@ import (
 	"strings"
 	"strconv"
 	"runtime"
+	"io/ioutil"
 
 	"github.com/amo13/anarchy-droid/get"
 	"github.com/amo13/anarchy-droid/logger"
@@ -455,10 +456,26 @@ func (d *Device) InstallUniversalDrivers() error {
 	if err != nil {
 		return err
 	}
+	
+	// Temporarily copy installer to C:\
+	bytesRead, err := ioutil.ReadFile(`bin\UniversalAdbDriverSetup.msi`)
+	if err != nil {
+		logger.LogError(`Unable to read bin\UniversalAdbDriverSetup.msi for copying`, err)
+	}
+	err = ioutil.WriteFile(`C:\UniversalAdbDriverSetup.msi`, bytesRead, 0644)
+	if err != nil {
+		logger.LogError(`Unable to write C:\UniversalAdbDriverSetup.msi`, err)
+	}
 
-	stdout, stderr := helpers.Cmd(`bin\UniversalAdbDriverSetup.msi`, `C:\`)
+	stdout, stderr := helpers.Cmd(`C:\UniversalAdbDriverSetup.msi`, `C:\`)
 	logger.Log("UniversalAdbDriverSetup stdout:", stdout)
 	logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
+	
+	// Clean up: remove to temporarily copied installer
+	err = os.Remove(`C:\UniversalAdbDriverSetup.msi`)
+	if err != nil {
+		logger.LogError(`Unable to delete C:\UniversalAdbDriverSetup.msi`, err)
+	}
 
 	return nil
 }
