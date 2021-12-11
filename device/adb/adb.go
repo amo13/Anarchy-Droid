@@ -202,6 +202,7 @@ func Reboot(target string) (err error) {
 	case "bootloader":
 		b, err := Brand()
 		if err != nil {
+			logger.LogError("Cannot reboot to bootloader:", fmt.Errorf("brand unknown."))
 			return err
 		}
 		if b == "samsung" {
