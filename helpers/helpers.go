@@ -18,10 +18,19 @@ import (
     "golang.org/x/text/transform"
     "github.com/commander-cli/cmd"
     "golang.org/x/text/encoding/unicode"
+
+    "github.com/amo13/anarchy-droid/logger"
 )
 
-func Cmd(command string) (stdout string, stderr string) {
-    c := cmd.NewCommand(command)
+func Cmd(command ...string) (stdout string, stderr string) {
+    var c *cmd.Command
+    if len(command) == 1 {
+        c = cmd.NewCommand(command[0])
+    } else if len(command) == 2 {
+        c = cmd.NewCommand(command[0], cmd.WithWorkingDir(command[1]))
+    } else {
+        logger.LogError("cmd.NewCommand overloaded", fmt.Errorf("third parameter: " + command[2]))
+    }
 
     err := c.Execute()
     if err != nil {
