@@ -277,7 +277,7 @@ func bootTwrpStep() error {
 		// TODO?
 		// Display "Install official drivers" button?
 
-		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 12)
+		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 		if err != nil {
 			if err.Error() == "heimdall failed to access device" {
 				Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
@@ -445,7 +445,7 @@ func installOnAB() error {
 			if Chk_skipflashtwrp.Checked {
 				device.D1.Reboot("recovery")
 			} else {
-				reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 12)
+				reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 				if err != nil {
 					logger.LogError("TWRP boot attempt returns the following error:", err)
 					return err
@@ -497,7 +497,7 @@ func installOnAB() error {
 		return fmt.Errorf("Cannot boot TWRP: missing image file")
 	}
 
-	reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 12)
+	reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 	if err != nil {
 		logger.LogError("TWRP boot attempt returns the following error:", err)
 		return err
