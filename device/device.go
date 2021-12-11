@@ -118,7 +118,15 @@ func (d *Device) GetState() string {
 func (d *Device) Reboot(target string) (err error) {
 	switch d.State {
 	case "android", "recovery":
-		err = adb.Reboot(target)
+		if strings.ToLower(target) == "bootloader" {
+			if strings.ToLower(d.Brand) == "samsung" {
+				err = adb.Reboot("heimdall")
+			} else if strings.ToLower(d.Brand) == "" {
+				err = adb.Reboot(target)
+			} else {
+				err = adb.Reboot("fastboot")
+			}
+		}
 	case "fastboot":
 		err = fastboot.Reboot(target)
 	case "heimdall":
