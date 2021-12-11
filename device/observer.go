@@ -61,7 +61,7 @@ func (d *Device) doObservation(last_state string) string {
 		}
 	}
 
-	if d.State_request != "" && d.State != "disconnected" && !d.Flashing {
+	if d.State_request != "" && d.State != "disconnected" {
 		d.HandleStateRequest(d.State_request)
 	}
 
