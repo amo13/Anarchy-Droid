@@ -7,6 +7,7 @@ import (
 	"bufio"
     "bytes"
     "regexp"
+    "os/exec"
     "runtime"
     "strings"
     "net/http"
@@ -16,28 +17,47 @@ import (
     "path/filepath"
     "gopkg.in/yaml.v3"
     "golang.org/x/text/transform"
-    "github.com/commander-cli/cmd"
     "golang.org/x/text/encoding/unicode"
 
     "github.com/amo13/anarchy-droid/logger"
 )
 
-func Cmd(command ...string) (stdout string, stderr string) {
-    var c *cmd.Command
-    if len(command) == 1 {
-        c = cmd.NewCommand(command[0])
-    } else if len(command) == 2 {
-        c = cmd.NewCommand(command[0], cmd.WithWorkingDir(command[1]))
-    } else {
-        logger.LogError("cmd.NewCommand overloaded", fmt.Errorf("third parameter: " + command[2]))
+func Cmd(command string, args ...string) (stdout string, stderr string) {
+    if strings.HasPrefix(command, "sudo ") || strings.Contains(command, "| sudo ") {
+        return Cmd("/bin/sh", "-c", command + " " + strings.Join(args, " "))
     }
 
-    err := c.Execute()
+    c := exec.Command(command, args...)
+
+    cOut, err := c.StdoutPipe()
     if err != nil {
-        panic(err.Error())
+        logger.LogError("Error binding STDOUT for command", err)
+    }
+    cErr, err := c.StderrPipe()
+    if err != nil {
+        logger.LogError("Error binding STDERR for command", err)
     }
 
-    return c.Stdout(), c.Stderr()
+    err = c.Start()
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Could not execute command " + command + ":", err)
+    }
+
+    outBytes, err := io.ReadAll(cOut)
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Unable to read STDOUT", err)
+    }
+    errBytes, err := io.ReadAll(cErr)
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Unable to read STDERR", err)
+    }
+
+    c.Wait()
+
+    return string(outBytes), string(errBytes)
 }
 
 func ReadFromURL(url string) ([]byte, error) {

@@ -15,8 +15,8 @@ import (
 
 const Logpath = "log/"
 
-func Cmd(command string) (stdout string, err error) {
-	return adb.Cmd("shell twrp " + command)
+func Cmd(args ...string) (stdout string, err error) {
+	return adb.Cmd(append([]string{"shell", "twrp"}, args...)...)
 }
 
 // Check for disconnection error or suddenly unauthorized error
@@ -48,7 +48,7 @@ func VersionConnected() (string, error) {
 
 func wipe(partition string) error {
 	if adb.State() == "recovery" {
-		_, err := adb.Cmd("shell twrp wipe " + partition)
+		_, err := adb.Cmd("shell", "twrp", "wipe", partition)
 		if err != nil {
 			return err
 		}
@@ -117,7 +117,7 @@ func FormatData() error {
 
 func formatDataORS() error {
 	if adb.State() == "recovery" {
-		stdout, err := adb.Cmd("shell twrp format data")
+		stdout, err := adb.Cmd("shell", "twrp", "format", "data")
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func formatDataOldschool() error {
 	for _, data_path := range data_path_candidates {
 		logger.Log("Attempting to format", data_path, "as", data_fs)
 		if data_fs == "f2fs" {
-			r, err := adb.Cmd("shell mkfs.f2fs -t 0 " + data_path)
+			r, err := adb.Cmd("shell", "mkfs.f2fs", "-t", "0", data_path)
 			if err != nil {
 				return err
 			}
@@ -160,7 +160,7 @@ func formatDataOldschool() error {
 				logger.Log("Did not seem to work:\n", r)
 			}
 		} else if data_fs == "ext4" {
-			r, err := adb.Cmd("shell make_ext4fs " + data_path)
+			r, err := adb.Cmd("shell", "make_ext4fs ", data_path)
 			if err != nil {
 				return err
 			}
@@ -190,7 +190,7 @@ func findDataPartitionPathCandidates() ([]string, error) {
 	candidates := []string{}
 
 	// first possibility
-	r, err := adb.Cmd("shell cat /etc/fstab")
+	r, err := adb.Cmd("shell", "cat", "/etc/fstab")
 	if err != nil {
 		return []string{}, err
 	}
@@ -202,7 +202,7 @@ func findDataPartitionPathCandidates() ([]string, error) {
 	}
 
 	// second possibility
-	r, err = adb.Cmd("shell cat /etc/recovery.fstab")
+	r, err = adb.Cmd("shell", "cat", "/etc/recovery.fstab")
 	if err != nil {
 		return []string{}, err
 	}
@@ -241,7 +241,7 @@ func findDataPartitionFilesystem() (string, error) {
 	}
 
 	// first try
-	r, err := adb.Cmd("shell cat /etc/fstab")
+	r, err := adb.Cmd("shell", "cat", "/etc/fstab")
 	if err != nil {
 		return "", err
 	}
@@ -254,7 +254,7 @@ func findDataPartitionFilesystem() (string, error) {
 	}
 
 	// second try
-	r, err = adb.Cmd("shell cat /etc/recovery.fstab")
+	r, err = adb.Cmd("shell", "cat", "/etc/recovery.fstab")
 	if err != nil {
 		return "", err
 	}
@@ -269,7 +269,7 @@ func findDataPartitionFilesystem() (string, error) {
 
 func OpenSideload() error {
 	if adb.State() == "recovery" {
-		_, err := adb.Cmd("shell twrp sideload")
+		_, err := adb.Cmd("shell", "twrp", "sideload")
 		if err != nil {
 			return err
 		}
@@ -288,7 +288,7 @@ func Sideload(file_path string) error {
 	}
 
 	if adb.State() == "sideload" {
-		_, err = adb.Cmd("sideload " + file_path)
+		_, err = adb.Cmd("sideload", file_path)
 		if err != nil {
 			return err
 		}
@@ -371,7 +371,7 @@ func SendNanodroidSetup(setup map[string]string) error {
         return err
     }
 
-    stdout, err := adb.Cmd("shell ls /data/media/0/.nanodroid-setup")
+    stdout, err := adb.Cmd("shell", "ls", "/data/media/0/.nanodroid-setup")
     if err != nil {
         logger.LogError("Error checking if .nanodroid-setup was sent successfully:", err)
         return err
@@ -420,7 +420,7 @@ func GetAndReadLog() (string, error) {
 }
 
 func IsDataMounted() (bool, error) {
-	mounts, err := adb.Cmd("shell cat /proc/mounts")
+	mounts, err := adb.Cmd("shell", "cat", "/proc/mounts")
 	if unavailable(err) {
 		return false, err
 	}
@@ -443,7 +443,7 @@ func MountData() error {
 	}
 
 	if !mounted {
-		_, err := adb.Cmd("shell mount /data")
+		_, err := adb.Cmd("shell", "mount", "/data")
 		if unavailable(err) {
 			return err
 		}
@@ -459,7 +459,7 @@ func UnmountData() error {
 	}
 
 	if mounted {
-		_, err := adb.Cmd("shell umount /data")
+		_, err := adb.Cmd("shell", "umount", "/data")
 		if unavailable(err) {
 			return err
 		}

@@ -30,12 +30,12 @@ func heimdall_command() string {
 }
 
 // Returns the non-empty or longer of stdout and stderr for a given fastboot command
-func Cmd(command string) (stdout string, err error) {
+func Cmd(args ...string) (stdout string, err error) {
 	if !available() {
 		return "", fmt.Errorf("disconnected")
 	}
 
-	stdout, stderr := helpers.Cmd(heimdall_command() + " " + command)
+	stdout, stderr := helpers.Cmd(heimdall_command(), args...)
 	if stdout != "" && stderr == "" {
 		return strings.Trim(strings.Trim(stdout, "\n"), " "), nil
 	} else if stdout == "" && stderr != "" {
@@ -73,7 +73,7 @@ func available() bool {
 }
 
 func State() string {
-	stdout, _ := helpers.Cmd(heimdall_command() + " detect")
+	stdout, _ := helpers.Cmd(heimdall_command(), "detect")
 
 	if stdout == "" {
 		return "disconnected"
@@ -83,7 +83,7 @@ func State() string {
 }
 
 func FlashRecovery(img_file string, partition string) error {
-	result, err := Cmd("flash --" + partition + " " + img_file + " --no-reboot")
+	result, err := Cmd("flash", "--" + partition, img_file, "--no-reboot")
 	if unavailable(err) {
 		return err
 	}
