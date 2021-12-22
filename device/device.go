@@ -7,7 +7,6 @@ import (
 	"strings"
 	"strconv"
 	"runtime"
-	"path/filepath"
 
 	"github.com/amo13/anarchy-droid/get"
 	"github.com/amo13/anarchy-droid/logger"
@@ -413,7 +412,7 @@ func (d *Device) InstallDriversWithZadig() error {
 		return err
 	}
 
-	stdout, stderr := helpers.Cmd(`cmd /C "bin\zadig.exe"`)
+	stdout, stderr := helpers.Cmd("bin\\zadig.exe")
 	logger.Log("Zadig stdout:", stdout)
 	logger.LogError("Zadig stderr:", fmt.Errorf(stderr))
 
@@ -456,15 +455,12 @@ func (d *Device) InstallUniversalDrivers() error {
 	if err != nil {
 		return err
 	}
-	
-	abs, err := filepath.Abs(`bin\UniversalAdbDriverSetup.msi`)
-	if err != nil {
-		logger.LogError(`Unable to retrieve the absolute path to bin\UniversalAdbDriverSetup.msi`, err)
-	}
 
-	stdout, stderr := helpers.Cmd(abs, `C:\`)
+	stdout, stderr := helpers.Cmd("bin\\UniversalAdbDriverSetup.msi")
 	logger.Log("UniversalAdbDriverSetup stdout:", stdout)
-	logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
+	if stderr != "" {
+		logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
+	}
 
 	return nil
 }
