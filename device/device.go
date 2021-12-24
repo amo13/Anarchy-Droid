@@ -412,7 +412,7 @@ func (d *Device) InstallDriversWithZadig() error {
 		return err
 	}
 
-	stdout, stderr := helpers.Cmd("bin\\zadig.exe")
+	stdout, stderr := helpers.Cmd("cmd", "/C", "bin\\zadig.exe")
 	logger.Log("Zadig stdout:", stdout)
 	logger.LogError("Zadig stderr:", fmt.Errorf(stderr))
 
@@ -456,7 +456,7 @@ func (d *Device) InstallUniversalDrivers() error {
 		return err
 	}
 
-	stdout, stderr := helpers.Cmd("bin\\UniversalAdbDriverSetup.msi")
+	stdout, stderr := helpers.Cmd("cmd", "/C", "bin\\UniversalAdbDriverSetup.msi")
 	logger.Log("UniversalAdbDriverSetup stdout:", stdout)
 	if stderr != "" {
 		logger.LogError("UniversalAdbDriverSetup stderr:", fmt.Errorf(stderr))
