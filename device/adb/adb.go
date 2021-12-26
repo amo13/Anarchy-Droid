@@ -33,8 +33,8 @@ func adb_command() string {
 }
 
 // Returns trimmed stdout of a given adb command
-func Cmd(command string) (stdout string, err error) {
-	stdout, stderr := helpers.Cmd(adb_command() + " " + command)
+func Cmd(args ...string) (stdout string, err error) {
+	stdout, stderr := helpers.Cmd(adb_command(), args...)
 	if stderr != "" {
 		if strings.Contains(stderr, "no devices/emulators found") {
 			return "", fmt.Errorf("disconnected")
@@ -44,23 +44,23 @@ func Cmd(command string) (stdout string, err error) {
 			return "", fmt.Errorf("unauthorized")
 		} else if strings.Contains(stderr, "device still authorizing") {
 			return "", fmt.Errorf("unauthorized")
-		} else if command == "kill-server" && (strings.Contains(stderr, "Connection refused") || strings.Contains(stderr, "cannot connect to daemon")) {
+		} else if len(args) > 0 && args[0] == "kill-server" && (strings.Contains(stderr, "Connection refused") || strings.Contains(stderr, "cannot connect to daemon")) {
 			return "", fmt.Errorf("connection refused")
 		} else if strings.Contains(stderr, "daemon not running; starting now") {
 			return stdout, nil
 		} else if strings.Contains(stderr, "[sudo]") {
 			logger.Log("Stderr contains [sudo]")
-			if strings.Contains(stderr, "Connection refused") && command == "kill-server" {
+			if strings.Contains(stderr, "Connection refused") && len(args) > 0 && args[0] == "kill-server" {
 				return "", fmt.Errorf("connection refused")
 			} else {
-				logger.Log("Bug: sudo password prompt instead of command output. Retrying " + command)
+				logger.Log("Bug: sudo password prompt instead of command output. Killing adb server and retrying " + strings.Join(args, " "))
 				return "", KillServer()
 			}
 		} else if strings.Contains(stderr, "adb: failed to read command: Success") || strings.Contains(stderr, "adb: failed to read command: No error") {
 			return stdout, nil
 		}
 		
-		logger.LogError("ADB command " + command + " gave an unexpected error:", fmt.Errorf("stdout: " + stdout + "; stderr: " + stderr))
+		logger.LogError("ADB command " + strings.Join(args, " ") + " gave an unexpected error:", fmt.Errorf("stdout: " + stdout + "; stderr: " + stderr))
 	}
 
 	return strings.Trim(strings.Trim(stdout, "\n"), " "), nil
@@ -95,7 +95,7 @@ func State() string {
 	}
 	
 	// Call helpers.Cmd because we need stdout and stderr
-	stdout, stderr := helpers.Cmd(adb_command() + " get-state")
+	stdout, stderr := helpers.Cmd(adb_command(), "get-state")
 
 	if strings.HasPrefix(stderr, "error: no device") {
 		return "disconnected"
@@ -155,7 +155,7 @@ func IsReady() bool {
 
 func IsBootComplete() (bool, error) {
 	// Do not query the full props map before booting is completed
-	bootcomplete, stderr := helpers.Cmd(adb_command() + " shell getprop dev.bootcomplete")
+	bootcomplete, stderr := helpers.Cmd(adb_command(), "shell", "getprop", "dev.bootcomplete")
 	if stderr != "" {
 		logger.Log("Error executing adb shell getprop dev.bootcomplete: " + stderr)
 		return true, fmt.Errorf(stderr)
@@ -165,7 +165,7 @@ func IsBootComplete() (bool, error) {
 		return true, nil
 	} else {
 		// Do not query the full props map before booting is completed
-		boot_completed, stderr := helpers.Cmd(adb_command() + " shell getprop sys.boot_completed")
+		boot_completed, stderr := helpers.Cmd(adb_command(), "shell", "getprop", "sys.boot_completed")
 		if stderr != "" {
 			logger.Log("Error executing adb shell getprop sys.boot_completed: " + stderr)
 			return true, fmt.Errorf(stderr)
@@ -185,7 +185,7 @@ func IsBooting() (bool, error) {
 		return false, err
 	}
 
-	stdout, _ := helpers.Cmd(adb_command() + " get-state")
+	stdout, _ := helpers.Cmd(adb_command(), "get-state")
 	if strings.HasPrefix(stdout, "device") && !complete {
 		return true, nil
 	} else {
@@ -194,14 +194,17 @@ func IsBooting() (bool, error) {
 }
 
 func Reboot(target string) (err error) {
+	logger.Log("Rebooting device to " + target + "...")
+	
 	switch strings.ToLower(target) {
 	case "fastboot":
-		_, err = Cmd("reboot " + strings.ToLower("bootloader"))
+		_, err = Cmd("reboot", "bootloader")
 	case "heimdall":
-		_, err = Cmd("reboot " + strings.ToLower("download"))
+		_, err = Cmd("reboot", "download")
 	case "bootloader":
 		b, err := Brand()
 		if err != nil {
+			logger.LogError("Cannot reboot to bootloader:", fmt.Errorf("brand unknown."))
 			return err
 		}
 		if b == "samsung" {
@@ -210,7 +213,7 @@ func Reboot(target string) (err error) {
 			return Reboot("fastboot")
 		}
 	case "recovery","sideload","sideload-auto-reboot","download":
-		_, err = Cmd("reboot " + strings.ToLower(target))
+		_, err = Cmd("reboot", strings.ToLower(target))
 	default:
 		_, err = Cmd("reboot")
 	}
@@ -222,7 +225,7 @@ func Reboot(target string) (err error) {
 }
 
 func WhoAmI() (user string, err error) {
-	user, err = Cmd("shell whoami")
+	user, err = Cmd("shell", "whoami")
 	if unavailable(err) {
 		return "", err
 	}
@@ -231,7 +234,7 @@ func WhoAmI() (user string, err error) {
 }
 
 func GetPropMap() (map[string]string, error) {
-	stdout, err := Cmd("shell getprop")
+	stdout, err := Cmd("shell", "getprop")
 	if unavailable(err) {
 		return make(map[string]string), err
 	}
@@ -277,7 +280,7 @@ func Imei() (string, error) {
 	imei := "not found"
 
 	if maj >= 5 {
-		s, err := Cmd("shell service call iphonesubinfo 1")
+		s, err := Cmd("shell", "service", "call", "iphonesubinfo", "1")
 		if unavailable(err) {
 			return "", err
 		}
@@ -286,7 +289,7 @@ func Imei() (string, error) {
 		re2 := regexp.MustCompile(`\d`)
 		imei = strings.Join(re2.FindAllString(strings.Join(re1.FindAllString(s, -1), ""), -1), "")
 	} else {
-		s, err := Cmd("shell dumpsys iphonesubinfo")
+		s, err := Cmd("shell", "dumpsys", "iphonesubinfo")
 		if unavailable(err) {
 			return "", err
 		}
@@ -299,7 +302,7 @@ func Imei() (string, error) {
 }
 
 func ShowImeiOnDeviceScreen() error {
-	_, err := Cmd("shell am start -n com.android.settings/com.android.settings.deviceinfo.ImeiInformation")
+	_, err := Cmd("shell", "am", "start", "-n", "com.android.settings/com.android.settings.deviceinfo.ImeiInformation")
 	if unavailable(err) {
 		return err
 	}
@@ -442,12 +445,12 @@ func IsCustomRomFromMap(props map[string]string) bool {
 }
 
 func Push(local string, remote string) error {
-	_, err := Cmd("push " + local + " " + remote)
+	_, err := Cmd("push", local, remote)
 	return err
 }
 
 func Pull(remote string, local string) error {
-	_, err := Cmd("pull " + remote + " " + local)
+	_, err := Cmd("pull", remote, local)
 	return err
 }
 

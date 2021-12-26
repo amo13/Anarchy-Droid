@@ -2,16 +2,17 @@ package main
 
 import(
 	"github.com/amo13/anarchy-droid/logger"
+	"github.com/amo13/anarchy-droid/lookup"
 	"github.com/amo13/anarchy-droid/helpers"
 	"github.com/amo13/anarchy-droid/device"
 	"github.com/amo13/anarchy-droid/device/twrp"
 	"github.com/amo13/anarchy-droid/get"
 
-	"os"
 	"fmt"
 	"sync"
 	"time"
 	"strings"
+	"runtime"
 )
 
 var Files map[string]string
@@ -76,6 +77,12 @@ func prepareFlash() error {
 				logger.LogError("Error booting TWRP:", err)
 				Lbl_flashing_instructions.SetText("Error booting TWRP:\n" + err.Error())
 			}
+		} else {
+			err = romInstallationStep()
+			if err != nil {
+				logger.LogError("Error during installation:", err)
+				Lbl_flashing_instructions.SetText("Error during installation:\n" + err.Error())
+			}
 		}
 	}
 
@@ -120,6 +127,12 @@ func unlockStep(unlock_code string) {
 				logger.LogError("Error booting TWRP:", err)
 				Lbl_flashing_instructions.SetText("Error booting TWRP:\n" + err.Error())
 			}
+		} else {
+			err = romInstallationStep()
+			if err != nil {
+				logger.LogError("Error during installation:", err)
+				Lbl_flashing_instructions.SetText("Error during installation:\n" + err.Error())
+			}
 		}
 	}()
 }
@@ -153,6 +166,99 @@ func checkManualRecoveryBoot(reboot_instructions string) error {
 	return nil
 }
 
+func bootloopRescue(bootloop_codename string) error {
+	w.SetContent(flashingScreen())
+	active_screen = "flashingScreen"
+
+	// For pick up by other functions
+	device.D1.Codename = bootloop_codename
+
+	go logger.Report(map[string]string{"progress":"Start bootloop rescue"})
+	logger.Log("Starting bootloop rescue procedure for " + bootloop_codename)
+
+	// Download files
+	logger.Log("Downloading TWRP...")
+	Lbl_progressbar.SetText("Downloading TWRP...")
+	Progressbar.Start()
+
+	if Files == nil {
+		Files = make(map[string]string)
+	}
+
+	twrp_img_path := ""
+	if Chk_user_twrp.Checked {
+		twrp_img_path = get.A1.User.Twrp.Img.Href
+	} else {
+		twrp_img_path = "flash/" + get.A1.User.Twrp.Img.Filename
+		err := get.DownloadFile(twrp_img_path, get.A1.User.Twrp.Img.Href, get.A1.User.Twrp.Img.Checksum_url_suffix)
+		if err != nil {
+			Lbl_progressbar.SetText("Downloading TWRP... Failed.")
+			return err
+		}
+	}
+	if twrp_img_path != "" {
+		Files["twrp_img"] = twrp_img_path
+	}
+
+	Progressbar.Stop()
+	logger.Log("TWRP downloaded successfully:", helpers.MapToString(Files))
+	Lbl_progressbar.SetText("TWRP downloaded successfully!")
+
+	device.D1.Flashing = true
+
+	// Assume the device is already unlocked
+	// (Why would it bootloop otherwise?)
+	// and force boot or installation
+	Chk_skipflashtwrp.SetChecked(false)
+
+	reboot_instructions := "Please start your device in bootloader mode (fastboot, heimdall/odin or download mode) and connect it with USB."
+	// Brand specific instructions for rebooting to bootloader
+	// if we can determine the brand of the given device
+	brand, err := lookup.CodenameToBrand(bootloop_codename)
+	if err == nil && brand != "" {
+		looked_up, err := lookup.BootloaderKeyCombination(brand)
+		if err != nil {
+			logger.LogError("Unable to lookup BootloaderKeyCombination for brand " + brand, err)
+		} else if looked_up == "" {
+			logger.LogError("No BootloaderKeyCombination instructions found for brand " + brand, fmt.Errorf("Missing BootloaderKeyCombination instructions for brand " + brand))
+		} else {
+			reboot_instructions = looked_up
+		}
+	} else {
+		logger.LogError("Unable to find the brand of " + bootloop_codename, err)
+	}
+
+	// For pick up by other functions
+	device.D1.Codename = bootloop_codename
+	device.D1.Brand = brand
+
+	Lbl_flashing_instructions.SetText(reboot_instructions)
+	device.D1.State_request = "bootloader"
+	<-device.D1.State_reached	// blocks until recovery is reached
+
+	Lbl_flashing_instructions.SetText("Please wait...")
+	Lbl_progressbar.SetText("Attempting to boot or install TWRP...")
+
+	err = bootTwrpStep()
+	if err != nil {
+		if err.Error() == "manually booting recovery failed" {
+			logger.Log("manually booting recovery failed")
+			Lbl_progressbar.SetText("")
+			Lbl_flashing_instructions.SetText("Manually booting TWRP failed.\n\nPlease restart and try again.")
+		} else {
+			logger.LogError("Error booting TWRP:", err)
+			Lbl_progressbar.SetText("")
+			Lbl_flashing_instructions.SetText("Error booting TWRP:\n" + err.Error())
+		}
+
+		return err
+	} else {
+		Lbl_flashing_instructions.SetText("Congratulations, you should now have a recovery system running on your device. You can use it to perform a factory reset or restart " + AppName + " to install a fresh rom.")
+		device.D1.Flashing = false
+		return nil
+	}
+}
+
 func bootTwrpStep() error {
 	logger.Log("Arrived at TWRP booting step")
 
@@ -164,19 +270,58 @@ func bootTwrpStep() error {
 			return fmt.Errorf("Cannot boot TWRP: missing image file")
 		}
 
-		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"])
+		if runtime.GOOS == "windows" {
+			Lbl_flashing_instructions.SetText("Waiting for bootloader... If drivers appear to be missing, a driver installation tool will automatically be launched for you...")
+		}
+
+		// TODO?
+		// Display "Install official drivers" button?
+
+		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 		if err != nil {
 			if err.Error() == "heimdall failed to access device" {
-				err = installDriversWithZadig()
+				Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
+				err = device.D1.InstallDriversWithZadig()
 				if err != nil {
 					logger.LogError("Failed to download zadig", err)
 					return err
 				}
-				// Retry
-				reboot_instructions, err = device.D1.BootRecovery(Files["twrp_img"])
+				// Retry and give the user 20 minutes to install drivers on windows
+				reboot_instructions, err = device.D1.BootRecovery(Files["twrp_img"], 1200)
 				if err != nil {
 					logger.LogError("TWRP boot attempt returns the following error:", err)
 					return err
+				}
+			} else if err.Error() == "timeout waiting for bootloader on windows" {
+				logger.Log("Trying to download and launch a driver installer...")
+				if strings.ToLower(device.D1.Brand) == "samsung" {
+					Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
+					err = device.D1.InstallDriversWithZadig()
+					if err != nil {
+						logger.LogError("Failed to download zadig", err)
+						return fmt.Errorf("Failed to download or launch zadig for driver installation: " + err.Error())
+					}
+				} else {
+					Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device... An installer should open automatically.")
+					err = device.D1.InstallUniversalDrivers()
+					if err != nil {
+						logger.LogError("Failed to download or launch universal driver installer", err)
+						return fmt.Errorf("Failed to download or launch universal driver installer: " + err.Error())
+					}
+				}
+				// Retry and give the user 20 minutes to install drivers on windows
+				reboot_instructions, err = device.D1.BootRecovery(Files["twrp_img"], 1200)
+				if err != nil {
+					if err.Error() == "heimdall failed to access device" {
+						Lbl_flashing_instructions.SetText("Failed to install drivers. You might need to reboot your computer and try again.")
+						return fmt.Errorf("Failed to install drivers. You might need to reboot your computer and try again.")
+					} else if err.Error() == "timeout waiting for bootloader on windows" {
+						Lbl_flashing_instructions.SetText("Failed to install drivers. You might need to reboot your computer and try again.")
+						return fmt.Errorf("Failed to install drivers. You might need to reboot your computer and try again.")
+					} else {
+						logger.LogError("TWRP boot attempt returns the following error:", err)
+						return err
+					}
 				}
 			} else {
 				logger.LogError("TWRP boot attempt returns the following error:", err)
@@ -194,8 +339,15 @@ func bootTwrpStep() error {
 		time.Sleep(5 * time.Second)
 	}
 
+	return nil
+}
+
+func romInstallationStep() error {
 	device.D1.State_request = "recovery"
 	<-device.D1.State_reached	// blocks until recovery is reached
+
+	// Hide "Install official drivers" button
+	// TODO
 
 	if device.D1.IsAB {
 		err := installOnAB()
@@ -212,60 +364,6 @@ func bootTwrpStep() error {
 	}
 
 	return nil
-}
-
-func installDriversWithZadig() error {
-	err := get.Zadig()
-	if err != nil {
-		return err
-	}
-
-	err = writeZadigConfig()
-	if err != nil {
-		return err
-	}
-
-	Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
-
-	os.Chdir("bin")
-	defer os.Chdir("..")
-
-	stdout, stderr := helpers.Cmd(`Powershell -Command "& { Start-Process \"zadig.exe\" -Verb RunAs }`)
-	logger.Log("Zadig stdout:", stdout)
-	logger.LogError("Zadig stderr:", fmt.Errorf(stderr))
-
-	return nil
-}
-
-func writeZadigConfig() error {
-	file, err := os.OpenFile("bin/zadig.ini", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-    if err != nil {
-        return err
-    }
-
-    // Write the file
-    fmt.Fprintln(file, "[general]")
-    fmt.Fprintln(file, "advanced_mode = false")
-	fmt.Fprintln(file, "exit_on_success = true")
-	fmt.Fprintln(file, "log_level = 0")
-	fmt.Fprintln(file, "  ")
-	fmt.Fprintln(file, "[device]")
-	fmt.Fprintln(file, "list_all = true")
-	fmt.Fprintln(file, "include_hubs = false")
-	fmt.Fprintln(file, "trim_whitespaces = true")
-	fmt.Fprintln(file, "  ")
-	fmt.Fprintln(file, "[driver]  ")
-	fmt.Fprintln(file, "default_driver = 0")
-	fmt.Fprintln(file, "extract_only = false")
-	fmt.Fprintln(file, "  ")
-	fmt.Fprintln(file, "[security]")
-
-    err = file.Close()
-    if err != nil {
-        return err
-    }
-
-    return nil
 }
 
 func installOnAOnly() error {
@@ -347,7 +445,7 @@ func installOnAB() error {
 			if Chk_skipflashtwrp.Checked {
 				device.D1.Reboot("recovery")
 			} else {
-				reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"])
+				reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 				if err != nil {
 					logger.LogError("TWRP boot attempt returns the following error:", err)
 					return err
@@ -399,7 +497,7 @@ func installOnAB() error {
 		return fmt.Errorf("Cannot boot TWRP: missing image file")
 	}
 
-	reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"])
+	reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
 	if err != nil {
 		logger.LogError("TWRP boot attempt returns the following error:", err)
 		return err
@@ -510,6 +608,7 @@ func finishInstallation() error {
 
 	device.D1.State_request = "recovery"
 	<-device.D1.State_reached	// blocks until recovery is reached
+
 	device.D1.Reboot("android")
 
 	time.Sleep(20 * time.Second)

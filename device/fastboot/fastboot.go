@@ -31,12 +31,12 @@ func fastboot_command() string {
 }
 
 // Returns the non-empty or longer one of stdout and stderr for a given fastboot command
-func Cmd(command string) (stdout string, err error) {
+func Cmd(args ...string) (stdout string, err error) {
 	if !available() {
 		return "", fmt.Errorf("disconnected")
 	}
 
-	stdout, stderr := helpers.Cmd(fastboot_command() + " " + command)
+	stdout, stderr := helpers.Cmd(fastboot_command(), args...)
 	if stdout != "" && stderr == "" {
 		return strings.Trim(strings.Trim(stdout, "\n"), " "), nil
 	} else if stdout == "" && stderr != "" {
@@ -74,7 +74,7 @@ func available() bool {
 }
 
 func State() string {
-	stdout, _ := helpers.Cmd(fastboot_command() + " devices")
+	stdout, _ := helpers.Cmd(fastboot_command(), "devices")
 
 	if stdout == "" {
 		return "disconnected"
@@ -88,8 +88,10 @@ func Reboot(target string) error {
 		return fmt.Errorf("disconnected")
 	}
 
+	logger.Log("Rebooting device to " + target + "...")
+
 	if target == "bootloader" {
-		_, err := Cmd("reboot bootloader")
+		_, err := Cmd("reboot", "bootloader")
 		return err
 	} else {
 		_, err := Cmd("reboot")
@@ -102,7 +104,7 @@ func GetVarMap() (map[string]string, error) {
 		return make(map[string]string), fmt.Errorf("disconnected")
 	}
 
-	stdout, err := Cmd("getvar all")
+	stdout, err := Cmd("getvar", "all")
 	if unavailable(err) {
 		return make(map[string]string), err
 	}
@@ -240,7 +242,7 @@ func GetUnlockData(brand string) (string, error) {
 }
 
 func GetUnlockDataMotorola() (string, error) {
-	data, err := Cmd("oem get_unlock_data")
+	data, err := Cmd("oem", "get_unlock_data")
 	if unavailable(err) {
 		return "", err
 	}
@@ -316,7 +318,7 @@ func Unlock(brand string, unlock_code string) error {
 }
 
 func UnlockMotorola(unlock_code string) error {
-	result, err := Cmd("oem unlock " + unlock_code)
+	result, err := Cmd("oem", "unlock", unlock_code)
 	if unavailable(err) {
 		return err
 	}
@@ -351,7 +353,7 @@ func UnlockMotorola(unlock_code string) error {
 }
 
 func UnlockSony(unlock_code string) error {
-	result, err := Cmd("oem unlock 0x" + unlock_code)
+	result, err := Cmd("oem", "unlock", "0x" + unlock_code)
 	if unavailable(err) {
 		return err
 	}
@@ -393,7 +395,7 @@ func UnlockNvidia() error {
 }
 
 func UnlockGeneric() error {
-	result, err := Cmd("oem unlock")
+	result, err := Cmd("oem", "unlock")
 	if unavailable(err) {
 		return err
 	}
@@ -427,7 +429,7 @@ func UnlockGeneric() error {
 }
 
 func FlashStartupLogo(logo_file string) error {
-	result, err := Cmd("flash logo " + logo_file)
+	result, err := Cmd("flash", "logo", logo_file)
 	if unavailable(err) {
 		return err
 	}
@@ -479,7 +481,7 @@ func bootRecoveryNvidia(img_file string) error {
 }
 
 func bootRecoveryGeneric(img_file string) error {
-	result, err := Cmd("boot " + img_file)
+	result, err := Cmd("boot", img_file)
 	if unavailable(err) {
 		return err
 	}
@@ -532,7 +534,7 @@ func flashRecoveryNvidia(img_file string, partition string) error {
 }
 
 func flashRecoveryGeneric(img_file string, partition string) error {
-	result, err := Cmd("flash " + partition + " " + img_file)
+	result, err := Cmd("flash", partition, img_file)
 	if unavailable(err) {
 		return err
 	}

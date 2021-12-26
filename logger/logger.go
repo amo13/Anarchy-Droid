@@ -39,8 +39,7 @@ func Report(params map[string]string) {
 	report = report + "&new_visit=" + newVisit
 	newVisit = "0"
 	report = report + "&ua=" + userAgent() + " Firefox/" + AppVersion
-	report = report + "&_cvar={\"1\":[\"Device Model\",\"" + Device_model + "\"],\"2\":[\"Device Codename\",\"" + Device_codename + "\"]}"
-	report = report + "&_cvar={\"3\":[\"Version\",\"" + AppVersion + "\"],\"4\":[\"Build\",\"" + BuildDate + "\"]}"
+	report = report + "&_cvar={\"1\":[\"Version\",\"" + AppVersion + "\"],\"2\":[\"Build\",\"" + BuildDate + "\"],\"3\":[\"Device Model\",\"" + Device_model + "\"],\"4\":[\"Device Codename\",\"" + Device_codename + "\"]}"
 	report = report + "&e_c=" + params["category"]
 	if params["action"] != "" { report = report + "&e_a=" + params["action"] }
 	if params["name"] != "" { report = report + "&e_n=" + params["name"] }

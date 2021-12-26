@@ -15,8 +15,8 @@ import (
 
 const Logpath = "log/"
 
-func Cmd(command string) (stdout string, err error) {
-	return adb.Cmd("shell twrp " + command)
+func Cmd(args ...string) (stdout string, err error) {
+	return adb.Cmd(append([]string{"shell", "twrp"}, args...)...)
 }
 
 // Check for disconnection error or suddenly unauthorized error
@@ -48,7 +48,7 @@ func VersionConnected() (string, error) {
 
 func wipe(partition string) error {
 	if adb.State() == "recovery" {
-		_, err := adb.Cmd("shell twrp wipe " + partition)
+		_, err := adb.Cmd("shell", "twrp", "wipe", partition)
 		if err != nil {
 			return err
 		}
@@ -102,8 +102,13 @@ func WipeClean() error {
 }
 
 func FormatData() error {
+	err := UnmountData()
+	if err != nil {
+		return err
+	}
+
 	if adb.State() == "recovery" {
-		err := formatDataORS()
+		err = formatDataORS()
 		if err != nil {
 			err = formatDataOldschool()
 			if err != nil {
@@ -112,12 +117,17 @@ func FormatData() error {
 		}
 	}
 
+	err = MountData()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func formatDataORS() error {
 	if adb.State() == "recovery" {
-		stdout, err := adb.Cmd("shell twrp format data")
+		stdout, err := adb.Cmd("shell", "twrp", "format", "data")
 		if err != nil {
 			return err
 		}
@@ -141,39 +151,41 @@ func formatDataOldschool() error {
 		return err
 	}
 
-	data_fs, err := findDataPartitionFilesystem()
+	data_fs_candidates, err := findDataPartitionFilesystemCandidates()
 	if err != nil {
 		return err
 	}
 
-	for _, data_path := range data_path_candidates {
-		logger.Log("Attempting to format", data_path, "as", data_fs)
-		if data_fs == "f2fs" {
-			r, err := adb.Cmd("shell mkfs.f2fs -t 0 " + data_path)
-			if err != nil {
-				return err
-			}
+	for _, data_fs := range data_fs_candidates {
+		for _, data_path := range data_path_candidates {
+			logger.Log("Attempting to format", data_path, "as", data_fs)
+			if data_fs == "f2fs" {
+				r, err := adb.Cmd("shell", "mkfs.f2fs", "-t", "0", data_path)
+				if err != nil {
+					logger.Log("Format error:", err.Error())
+				}
 
-			if strings.Contains(strings.ToLower(r), "format successful") {
-				return nil
-			} else {
-				logger.Log("Did not seem to work:\n", r)
-			}
-		} else if data_fs == "ext4" {
-			r, err := adb.Cmd("shell make_ext4fs " + data_path)
-			if err != nil {
-				return err
-			}
+				if strings.Contains(strings.ToLower(r), "format successful") {
+					return nil
+				} else {
+					logger.Log("Did not seem to work:\n", r)
+				}
+			} else if data_fs == "ext4" {
+				r, err := adb.Cmd("shell", "make_ext4fs ", data_path)
+				if err != nil {
+					logger.Log("Format error:", err.Error())
+				}
 
-			if strings.Contains(strings.ToLower(r), "created filesystem") {
-				return nil
+				if strings.Contains(strings.ToLower(r), "created filesystem") {
+					return nil
+				} else {
+					logger.Log("Did not seem to work:\n", r)
+				}
+			} else if data_fs == "" {
+				return fmt.Errorf("Unknown data partition filesystem")
 			} else {
-				logger.Log("Did not seem to work:\n", r)
+				return fmt.Errorf("Unable to format data to " + data_fs)
 			}
-		} else if data_fs == "" {
-			return fmt.Errorf("Unknown data partition filesystem")
-		} else {
-			return fmt.Errorf("Unable to format data to " + data_fs)
 		}
 	}
 
@@ -190,7 +202,7 @@ func findDataPartitionPathCandidates() ([]string, error) {
 	candidates := []string{}
 
 	// first possibility
-	r, err := adb.Cmd("shell cat /etc/fstab")
+	r, err := adb.Cmd("shell", "cat", "/etc/fstab")
 	if err != nil {
 		return []string{}, err
 	}
@@ -202,7 +214,7 @@ func findDataPartitionPathCandidates() ([]string, error) {
 	}
 
 	// second possibility
-	r, err = adb.Cmd("shell cat /etc/recovery.fstab")
+	r, err = adb.Cmd("shell", "cat", "/etc/recovery.fstab")
 	if err != nil {
 		return []string{}, err
 	}
@@ -234,42 +246,48 @@ func findDataPartitionPathCandidates() ([]string, error) {
 	return helpers.UniqueNonEmptyElementsOfSlice(candidates), nil
 }
 
-func findDataPartitionFilesystem() (string, error) {
+func findDataPartitionFilesystemCandidates() ([]string, error) {
+	candidates := []string{}
+
 	if adb.State() != "recovery" {
 		logger.Log("Device not in recovery mode, cannot open sideload")
-		return "", fmt.Errorf("Recovery not connected")
+		return candidates, fmt.Errorf("Recovery not connected")
 	}
 
-	// first try
-	r, err := adb.Cmd("shell cat /etc/fstab")
+	// first candidate
+	r, err := adb.Cmd("shell", "cat", "/etc/fstab")
 	if err != nil {
-		return "", err
+		return candidates, err
 	}
 	for _, line := range helpers.StringToLinesSlice(r) {
 		if strings.Contains(line, "/data") {
 			if len(strings.Split(line, " ")) > 2 {
-				return strings.Split(line, " ")[2], nil
+				candidates = append(candidates, strings.Split(line, " ")[2])
 			}
 		}
 	}
 
-	// second try
-	r, err = adb.Cmd("shell cat /etc/recovery.fstab")
+	// second candidate
+	r, err = adb.Cmd("shell", "cat", "/etc/recovery.fstab")
 	if err != nil {
-		return "", err
+		return candidates, err
 	}
 	for _, line := range helpers.StringToLinesSlice(r) {
 		if strings.Contains(line, "/data") && len(strings.Split(line, " ")) > 1 {
-			return strings.Split(line, " ")[1], nil
+			candidates = append(candidates, strings.Split(line, " ")[1])
 		}
 	}
 
-	return "", fmt.Errorf("Unable to determine the data partition filesystem")
+	if len(candidates) > 0 {
+		return candidates, nil
+	} else {
+		return candidates, fmt.Errorf("Unable to determine the data partition filesystem")
+	}
 }
 
 func OpenSideload() error {
 	if adb.State() == "recovery" {
-		_, err := adb.Cmd("shell twrp sideload")
+		_, err := adb.Cmd("shell", "twrp", "sideload")
 		if err != nil {
 			return err
 		}
@@ -288,7 +306,7 @@ func Sideload(file_path string) error {
 	}
 
 	if adb.State() == "sideload" {
-		_, err = adb.Cmd("sideload " + file_path)
+		_, err = adb.Cmd("sideload", file_path)
 		if err != nil {
 			return err
 		}
@@ -371,7 +389,7 @@ func SendNanodroidSetup(setup map[string]string) error {
         return err
     }
 
-    stdout, err := adb.Cmd("shell ls /data/media/0/.nanodroid-setup")
+    stdout, err := adb.Cmd("shell", "ls", "/data/media/0/.nanodroid-setup")
     if err != nil {
         logger.LogError("Error checking if .nanodroid-setup was sent successfully:", err)
         return err
@@ -420,7 +438,7 @@ func GetAndReadLog() (string, error) {
 }
 
 func IsDataMounted() (bool, error) {
-	mounts, err := adb.Cmd("shell cat /proc/mounts")
+	mounts, err := adb.Cmd("shell", "cat", "/proc/mounts")
 	if unavailable(err) {
 		return false, err
 	}
@@ -443,7 +461,7 @@ func MountData() error {
 	}
 
 	if !mounted {
-		_, err := adb.Cmd("shell mount /data")
+		_, err := adb.Cmd("shell", "mount", "/data")
 		if unavailable(err) {
 			return err
 		}
@@ -459,7 +477,7 @@ func UnmountData() error {
 	}
 
 	if mounted {
-		_, err := adb.Cmd("shell umount /data")
+		_, err := adb.Cmd("shell", "umount", "/data")
 		if unavailable(err) {
 			return err
 		}

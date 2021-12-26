@@ -7,6 +7,7 @@ import (
 	"bufio"
     "bytes"
     "regexp"
+    "os/exec"
     "runtime"
     "strings"
     "net/http"
@@ -16,19 +17,47 @@ import (
     "path/filepath"
     "gopkg.in/yaml.v3"
     "golang.org/x/text/transform"
-    "github.com/commander-cli/cmd"
     "golang.org/x/text/encoding/unicode"
+
+    "github.com/amo13/anarchy-droid/logger"
 )
 
-func Cmd(command string) (stdout string, stderr string) {
-    c := cmd.NewCommand(command)
-
-    err := c.Execute()
-    if err != nil {
-        panic(err.Error())
+func Cmd(command string, args ...string) (stdout string, stderr string) {
+    if strings.HasPrefix(command, "sudo ") || strings.Contains(command, "| sudo ") {
+        return Cmd("/bin/sh", "-c", command + " " + strings.Join(args, " "))
     }
 
-    return c.Stdout(), c.Stderr()
+    c := exec.Command(command, args...)
+
+    cOut, err := c.StdoutPipe()
+    if err != nil {
+        logger.LogError("Error binding STDOUT for command", err)
+    }
+    cErr, err := c.StderrPipe()
+    if err != nil {
+        logger.LogError("Error binding STDERR for command", err)
+    }
+
+    err = c.Start()
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Could not execute command " + command + ":", err)
+    }
+
+    outBytes, err := io.ReadAll(cOut)
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Unable to read STDOUT", err)
+    }
+    errBytes, err := io.ReadAll(cErr)
+    // Do not send a bug report containing a sudo password
+    if err != nil && !strings.Contains(err.Error(), "sudo ") {
+        logger.LogError("Unable to read STDERR", err)
+    }
+
+    c.Wait()
+
+    return string(outBytes), string(errBytes)
 }
 
 func ReadFromURL(url string) ([]byte, error) {

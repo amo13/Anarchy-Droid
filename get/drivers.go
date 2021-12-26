@@ -1,11 +1,5 @@
 package get
 
-import (
-	"os"
-
-	"github.com/amo13/anarchy-droid/helpers"
-)
-
 func Zadig() error {
 	url := "https://github.com/pbatard/libwdi/releases/download/b755/zadig-2.6.exe"
 	fallback_url := "https://stuff.free-droid.com/zadig-2.6.exe"
@@ -22,25 +16,15 @@ func Zadig() error {
 }
 
 func AdbDriver() error {
-	url := "https://cdn.universaladbdriver.com/wp-content/uploads/universaladbdriver_v6.0.zip"
-	fallback_url := "https://stuff.free-droid.com/universaladbdriver_v6.0.zip"
+	url := "https://github.com/koush/adb.clockworkmod.com/releases/download/v1.0.0/UniversalAdbDriverSetup.msi"
+	fallback_url := "https://stuff.free-droid.com/UniversalAdbDriverSetup.msi"
 
-	err := DownloadFile("universaladbdriver_v6.0.zip", url, "")
+	err := DownloadFile("bin/UniversalAdbDriverSetup.msi", url, "")
 	if err != nil {
-		err = DownloadFile("universaladbdriver_v6.0.zip", fallback_url, ".sha256")
+		err = DownloadFile("bin/UniversalAdbDriverSetup.msi", fallback_url, "")
 		if err != nil {
 			return err
 		}
-	}
-
-	err = helpers.Unzip("universaladbdriver_v6.0.zip", "bin")
-	if err != nil {
-		return err
-	}
-
-	err = os.Remove("universaladbdriver_v6.0.zip")
-	if err != nil {
-		return err
 	}
 
 	return nil

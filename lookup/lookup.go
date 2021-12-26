@@ -18,6 +18,7 @@ var ModelToCodenameYamlMap map[string]string
 var SupportedYamlMap map[string]string
 var RecoveryPartitionYamlMap map[string]string
 var RecoveryKeyCombinationYamlMap map[string]string
+var BootloaderKeyCombinationYamlMap map[string]string
 var DeviceLookupCsvPath string = "bin/device-lookup.csv"
 var DeviceLookupCsvLines [][]string
 var CodenameSuffixes []string = []string{"_n", "_f", "_t", "_ds", "_nt", "_u2", "_ud2", "_uds", "_cdma", "_umts", "_udstv", "_umtsds"}
@@ -336,6 +337,38 @@ func recoveryKeyCombinationYamlMap() (map[string]string, error) {
 
 	RecoveryKeyCombinationYamlMap = m
 	return RecoveryKeyCombinationYamlMap, nil
+}
+
+func BootloaderKeyCombination(codename_or_brand string) (string, error) {
+	return bootloaderKeyCombinationYaml(codename_or_brand)
+}
+
+func bootloaderKeyCombinationYaml(codename_or_brand string) (string, error) {
+	m, err := bootloaderKeyCombinationYamlMap()
+	if err != nil {
+		return "", err
+	}
+
+	return m[strings.ToLower(codename_or_brand)], nil
+}
+
+func bootloaderKeyCombinationYamlMap() (map[string]string, error) {
+	if BootloaderKeyCombinationYamlMap != nil && len(BootloaderKeyCombinationYamlMap) > 0 {
+		return BootloaderKeyCombinationYamlMap, nil
+	}
+
+	content, err := helpers.ReadFromURL("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/bootloader_key_combinations.yml")
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := helpers.YamlToFlatMap(content)
+	if err != nil {
+		return nil, err
+	}
+
+	BootloaderKeyCombinationYamlMap = m
+	return BootloaderKeyCombinationYamlMap, nil
 }
 
 func Alias(codename string) (string, error) {
