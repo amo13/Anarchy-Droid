@@ -22,9 +22,17 @@ var BootloaderKeyCombinationYamlMap map[string]string
 var DeviceLookupCsvPath string = "bin/device-lookup.csv"
 var DeviceLookupCsvLines [][]string
 var CodenameSuffixes []string = []string{"_n", "_f", "_t", "_ds", "_nt", "_u2", "_ud2", "_uds", "_cdma", "_umts", "_udstv", "_umtsds"}
+var CodenamePrefixes []string = []string{"omni_"}
 
 // Try to lookup in yaml first and CSV then
 func ModelToCodename(model string) (string, error) {
+	// Trim possible prefixes (e.g. omni_a7y18lte)
+	for _, prefix := range CodenamePrefixes {
+		if strings.HasPrefix(model, prefix) {
+			model = model[len(prefix):]
+		}
+	}
+
 	y, err := modelToCodenameYaml(model)
 	if err != nil {
 		return "", err
@@ -62,6 +70,13 @@ func ModelToCodename(model string) (string, error) {
 // Returns a slice of codename candidates for a given model
 // The returned slice may contain 0, 1 or more elements
 func ModelToCodenameCandidatesForApi(model string) ([]string, error) {
+	// Trim possible prefixes (e.g. omni_a7y18lte)
+	for _, prefix := range CodenamePrefixes {
+		if strings.HasPrefix(model, prefix) {
+			model = model[len(prefix):]
+		}
+	}
+
 	y, err := modelToCodenameYaml(model)
 	if err != nil {
 		return []string{}, err
@@ -86,6 +101,13 @@ func ModelToCodenameCandidatesForApi(model string) ([]string, error) {
 // Returns codename candidates from device lookup CSV
 // (Yaml table is unambiguous and takes precedence anyway)
 func ModelToCodenameCandidates(model string) ([]string, error) {
+	// Trim possible prefixes (e.g. omni_a7y18lte)
+	for _, prefix := range CodenamePrefixes {
+		if strings.HasPrefix(model, prefix) {
+			model = model[len(prefix):]
+		}
+	}
+
 	return modelToCodenameCandidatesCsv(model)
 }
 
