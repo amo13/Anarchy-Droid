@@ -120,7 +120,7 @@ In order to launch the application on linux, you might need to allow executing t
 ![udev](screenshots/udev.png)
 
 On Linux systems, normal users are not allowed to access the devices over USB in the way this application needs to. Therefore, you have to choose between two options: the first is to simply provide your sudo password, the second is to setup udev rules for android devices.
-If you don't feel comfortable providing your sudo password to an unknown application, search the code of this repository for the keyword "sudo" and see for yourself that Anarchy-Droid is not going to misuse privileges.
+If you don't feel comfortable providing your sudo password to an unknown application, search the code of this repository for the keyword "sudo" and see for yourself that Anarchy-Droid is not going to misuse privileges. If you still don't wish to provide the sudo password directly to the application itself, you can leave the password field empty and click on *Continue*. That way, you can provide the password to the sudo prompt in your terminal. This requires you to launch Anarchy-Droid from a terminal in the same folder where the application is located.
 If you wish to use udev rules, either configure the rules manually or, if your distribution has a packaged rule set, search for the keywords "android udev" in your distribution repositories and install the according package. In Archlinux, the package is called "android-udev".
 
 
