@@ -108,6 +108,8 @@ func FlashRecovery(img_file string, partition string) error {
 }
 
 func Reboot() error {
+	logger.Log("Rebooting device...")
+
 	_, err := Cmd("print-pit")
 	if unavailable(err) {
 		return err

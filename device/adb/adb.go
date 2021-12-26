@@ -194,6 +194,8 @@ func IsBooting() (bool, error) {
 }
 
 func Reboot(target string) (err error) {
+	logger.Log("Rebooting device to " + target + "...")
+	
 	switch strings.ToLower(target) {
 	case "fastboot":
 		_, err = Cmd("reboot", "bootloader")

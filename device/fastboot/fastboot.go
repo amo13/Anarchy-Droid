@@ -88,6 +88,8 @@ func Reboot(target string) error {
 		return fmt.Errorf("disconnected")
 	}
 
+	logger.Log("Rebooting device to " + target + "...")
+
 	if target == "bootloader" {
 		_, err := Cmd("reboot", "bootloader")
 		return err
