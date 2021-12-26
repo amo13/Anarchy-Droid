@@ -117,6 +117,11 @@ func FormatData() error {
 		}
 	}
 
+	err = MountData()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
