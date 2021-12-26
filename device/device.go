@@ -126,6 +126,8 @@ func (d *Device) Reboot(target string) (err error) {
 			} else {
 				err = adb.Reboot("fastboot")
 			}
+		} else {
+			err = adb.Reboot(strings.ToLower(target))
 		}
 	case "fastboot":
 		err = fastboot.Reboot(target)

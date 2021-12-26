@@ -608,6 +608,7 @@ func finishInstallation() error {
 
 	device.D1.State_request = "recovery"
 	<-device.D1.State_reached	// blocks until recovery is reached
+
 	device.D1.Reboot("android")
 
 	time.Sleep(20 * time.Second)
