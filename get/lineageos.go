@@ -208,7 +208,7 @@ func LineageosMicrogLatestAvailableHref(codename string) (string, error) {
 		return "", nil
 	}
 
-	dl_url := base_url + latest_available
+	dl_url := url + "/" + latest_available
 
 	// Populate the A1 structs of availables
 	A1.Mutex.Lock()
