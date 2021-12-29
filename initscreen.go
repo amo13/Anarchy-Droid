@@ -76,7 +76,7 @@ func initScreen() fyne.CanvasObject {
 
 func initApp() (bool, error) {
 	Lbl_init_infotext.SetText("Checking internet connection...")
-	status_code, err := get.StatusCode("https://gitlab.com/free-droid/free-droid/raw/master/lookups/codenames.yml")
+	status_code, err := get.StatusCode("https://raw.githubusercontent.com/amo13/Anarchy-Droid/master/lookup/codenames.yml")
 	if err != nil {
 		return false, err
 	}
