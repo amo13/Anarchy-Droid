@@ -22,7 +22,8 @@ var BootloaderKeyCombinationYamlMap map[string]string
 var DeviceLookupCsvPath string = "bin/device-lookup.csv"
 var DeviceLookupCsvLines [][]string
 var CodenameSuffixes []string = []string{"_n", "_f", "_t", "_ds", "_nt", "_u2", "_ud2", "_uds", "_cdma", "_umts", "_udstv", "_umtsds"}
-var CodenamePrefixes []string = []string{"omni_"}
+var CodenamePrefixes []string = []string{"omni_", "lineage_"}
+var MainstreamBrands []string = []string{"acer", "asus", "blu", "bq", "google", "htc", "huawei", "leeco", "lenovo", "lg", "motorola", "nvidia", "nokia", "oneplus", "oppo", "realme", "redmi", "samsung", "sony", "xiaomi", "yu", "zte", "zuk"}
 
 // Try to lookup in yaml first and CSV then
 func ModelToCodename(model string) (string, error) {
@@ -706,11 +707,31 @@ func codenameToBrandCsv(codename string) (string, error) {
 
 	matches = helpers.UniqueNonEmptyElementsOfSlice(matches)
 
+	// Filter mainstream brands if 2 or more brand candidates
+	if len(matches) >= 2 {
+		matches = Intersection(matches, MainstreamBrands)
+	}
+
 	if len(matches) == 0 {
 		return "", fmt.Errorf("Brand of " + codename + " not found")
 	} else if len(matches) == 1 {
 		return matches[0], nil
 	} else {
-		return "", fmt.Errorf("Brand of " + codename + " is ambiguous")
+		return "", fmt.Errorf("Brand of " + codename + " is ambiguous: at least " + matches[0] + " and " + matches[1] + " are matching.")
 	}
+}
+
+func Intersection(a, b []string) (c []string) {
+    m := make(map[string]bool)
+
+    for _, item := range a {
+        m[item] = true
+    }
+
+    for _, item := range b {
+        if _, ok := m[item]; ok {
+            c = append(c, item)
+        }
+    }
+    return
 }
