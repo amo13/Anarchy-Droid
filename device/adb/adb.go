@@ -121,7 +121,7 @@ func State() string {
 	} else if strings.Contains(stderr, "daemon not running; starting now") {
 		return State()
 	} else {
-		logger.LogError("unknown state:\nStdOUT:" + stdout + "\nStdERR:" + stderr, fmt.Errorf("unknown adb state"))
+		logger.LogError("unknown state:\nStdOUT:" + stdout + "\nStdERR:" + stderr + "\n", fmt.Errorf("unknown adb state"))
 		return("unknown")
 	}
 }
