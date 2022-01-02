@@ -5,7 +5,7 @@ One-Click Android rom installation assistant
 
 Anarchy-Droid is an application designed to help you install custom roms on your Android device. It is supposed to make the process of finding, downloading and installing a rom (with addons like F-Droid and microG) as easy as possible. The primary audience is all the folks who do not really know anything about Android, TWRP or roms, but still would like to run a free, open-source and non-bloated Android on their devices. Using a free after-market rom like LineageOS should not be restricted to the few people with enough technical know-how to do the complex installation procedure all by themselves.
 
-Anarchy-Droid is available for Windows, Mac and Linux. As of now, it should be working fine with Samsung, OnePlus, Motorola, NVidia and Sony devices and with all other devices that already have TWRP installed.
+Anarchy-Droid is available for Windows, Mac and Linux. As of now, it should be working fine with many Samsung, OnePlus, Motorola, NVidia and Sony devices and with all other devices that already have TWRP installed.
 
 Anarchy-Droid is the successor of [Free-Droid](https://gitlab.com/free-droid/free-droid) which has been fully rewritten from scratch in go.
 
