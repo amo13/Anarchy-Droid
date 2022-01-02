@@ -319,6 +319,21 @@ func PrefixOfAll(sl []string) (string, error) {
     return "", nil
 }
 
+func Intersection(a, b []string) (c []string) {
+    m := make(map[string]bool)
+
+    for _, item := range a {
+        m[item] = true
+    }
+
+    for _, item := range b {
+        if _, ok := m[item]; ok {
+            c = append(c, item)
+        }
+    }
+    return
+}
+
 func ExtractFileNameFromHref(href string) string {
     parts := strings.Split(href, "/")
     return parts[len(parts) - 1]
