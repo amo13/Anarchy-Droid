@@ -348,6 +348,10 @@ func (a *Available) Populate(codename string) error {
 }
 
 func (a *Available) PopulateForApi(codename string) error {
+	// Clear A1 to prevent reading from it instead of
+	// scraping info for the new device
+	A1 = NewAvailable()
+
 	var wg sync.WaitGroup
 	errs := make(chan RetrievalError)
 	wg.Add(8)
@@ -506,89 +510,97 @@ func (a *Available) PopulateForApi(codename string) error {
 	return nil
 }
 
-func (a *Available) Print() {
-	logger.Log("Upstream:")
-	logger.Log("  Roms:")
+func (a *Available) String() string {
+	result := ""
+
+	result = result + "Upstream:" + "\n"
+	result = result + "  Roms:" + "\n"
 	for rom, _ := range a.Upstream.Rom {
-		logger.Log("   ", rom, ":")
-		logger.Log("      name:", a.Upstream.Rom[rom].Name)
-		logger.Log("      href:", a.Upstream.Rom[rom].Href)
-		logger.Log("      file:", a.Upstream.Rom[rom].Filename)
-		logger.Log("      ver :", a.Upstream.Rom[rom].Version)
-		logger.Log("      Aver:", a.Upstream.Rom[rom].Android_version)
+		result = result + "   " + rom + ":" + "\n"
+		result = result + "      name:" + a.Upstream.Rom[rom].Name + "\n"
+		result = result + "      href:" + a.Upstream.Rom[rom].Href + "\n"
+		result = result + "      file:" + a.Upstream.Rom[rom].Filename + "\n"
+		result = result + "      ver :" + a.Upstream.Rom[rom].Version + "\n"
+		result = result + "      Aver:" + a.Upstream.Rom[rom].Android_version + "\n"
 	}
-	logger.Log("  Romlist:", strings.Join(a.Upstream.Romlist[:], " "))
-	logger.Log("  TWRP Img:")
-	logger.Log("    href:", a.Upstream.Twrp.Img.Href)
-	logger.Log("    file:", a.Upstream.Twrp.Img.Filename)
-	logger.Log("    ver :", a.Upstream.Twrp.Img.Version)
-	logger.Log("  TWRP Zip:")
-	logger.Log("    href:", a.Upstream.Twrp.Zip.Href)
-	logger.Log("    file:", a.Upstream.Twrp.Zip.Filename)
-	logger.Log("    ver :", a.Upstream.Twrp.Zip.Version)
-	logger.Log("  NanoDroid:")
+	result = result + "  Romlist: " + strings.Join(a.Upstream.Romlist[:], " ") + "\n"
+	result = result + "  TWRP Img:" + "\n"
+	result = result + "    href: " + a.Upstream.Twrp.Img.Href + "\n"
+	result = result + "    file: " + a.Upstream.Twrp.Img.Filename + "\n"
+	result = result + "    ver : " + a.Upstream.Twrp.Img.Version + "\n"
+	result = result + "  TWRP Zip:" + "\n"
+	result = result + "    href: " + a.Upstream.Twrp.Zip.Href + "\n"
+	result = result + "    file: " + a.Upstream.Twrp.Zip.Filename + "\n"
+	result = result + "    ver : " + a.Upstream.Twrp.Zip.Version + "\n"
+	result = result + "  NanoDroid:" + "\n"
 	for module, _ := range a.Upstream.NanoDroid {
-		logger.Log("   ", module, ":")
-		logger.Log("      href:", a.Upstream.NanoDroid[module].Href)
-		logger.Log("      file:", a.Upstream.NanoDroid[module].Filename)
-		logger.Log("      ver :", a.Upstream.NanoDroid[module].Version)
+		result = result + "   " + module + ":" + "\n"
+		result = result + "      href: " + a.Upstream.NanoDroid[module].Href + "\n"
+		result = result + "      file: " + a.Upstream.NanoDroid[module].Filename + "\n"
+		result = result + "      ver : " + a.Upstream.NanoDroid[module].Version + "\n"
 	}
 	
 	// Do not print OpenGapps to prevent flood
 
-	logger.Log("Archive:")
-	logger.Log("  Roms:")
+	result = result + "Archive:" + "\n"
+	result = result + "  Roms:" + "\n"
 	for rom, _ := range a.Archive.Rom {
-		logger.Log("   ", rom, ":")
-		logger.Log("      name:", a.Archive.Rom[rom].Name)
-		logger.Log("      href:", a.Archive.Rom[rom].Href)
-		logger.Log("      file:", a.Archive.Rom[rom].Filename)
-		logger.Log("      ver :", a.Archive.Rom[rom].Version)
-		logger.Log("      Aver:", a.Archive.Rom[rom].Android_version)
+		result = result + "   " + rom + ":" + "\n"
+		result = result + "      name: " + a.Archive.Rom[rom].Name + "\n"
+		result = result + "      href: " + a.Archive.Rom[rom].Href + "\n"
+		result = result + "      file: " + a.Archive.Rom[rom].Filename + "\n"
+		result = result + "      ver : " + a.Archive.Rom[rom].Version + "\n"
+		result = result + "      Aver: " + a.Archive.Rom[rom].Android_version + "\n"
 	}
-	logger.Log("  Romlist:", strings.Join(a.Archive.Romlist[:], " "))
-	logger.Log("  TWRP Img:")
-	logger.Log("    href:", a.Archive.Twrp.Img.Href)
-	logger.Log("    file:", a.Archive.Twrp.Img.Filename)
-	logger.Log("    ver :", a.Archive.Twrp.Img.Version)
-	logger.Log("  TWRP Zip:")
-	logger.Log("    href:", a.Archive.Twrp.Zip.Href)
-	logger.Log("    file:", a.Archive.Twrp.Zip.Filename)
-	logger.Log("    ver :", a.Archive.Twrp.Zip.Version)
-	logger.Log("  TWRP Img Override:")
-	logger.Log("    href:", a.Archive.Override_twrp.Img.Href)
-	logger.Log("    file:", a.Archive.Override_twrp.Img.Filename)
-	logger.Log("    ver :", a.Archive.Override_twrp.Img.Version)
-	logger.Log("  TWRP Zip Override:")
-	logger.Log("    href:", a.Archive.Override_twrp.Zip.Href)
-	logger.Log("    file:", a.Archive.Override_twrp.Zip.Filename)
-	logger.Log("    ver :", a.Archive.Override_twrp.Zip.Version)
-	logger.Log("  Logo:")
-	logger.Log("    href:", a.Archive.Logo.Href)
-	logger.Log("    file:", a.Archive.Logo.Filename)
-	logger.Log("    ver :", a.Archive.Logo.Version)
-	logger.Log("  Flashme_pre:")
-	logger.Log("    href:", a.Archive.Flashme_pre.Href)
-	logger.Log("    file:", a.Archive.Flashme_pre.Filename)
-	logger.Log("    ver :", a.Archive.Flashme_pre.Version)
-	logger.Log("  Flashme_post:")
-	logger.Log("    href:", a.Archive.Flashme_post.Href)
-	logger.Log("    file:", a.Archive.Flashme_post.Filename)
-	logger.Log("    ver :", a.Archive.Flashme_post.Version)
+	result = result + "  Romlist: " + strings.Join(a.Archive.Romlist[:], " ") + "\n"
+	result = result + "  TWRP Img:" + "\n"
+	result = result + "    href: " + a.Archive.Twrp.Img.Href + "\n"
+	result = result + "    file: " + a.Archive.Twrp.Img.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Twrp.Img.Version + "\n"
+	result = result + "  TWRP Zip:" + "\n"
+	result = result + "    href: " + a.Archive.Twrp.Zip.Href + "\n"
+	result = result + "    file: " + a.Archive.Twrp.Zip.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Twrp.Zip.Version + "\n"
+	result = result + "  TWRP Img Override:" + "\n"
+	result = result + "    href: " + a.Archive.Override_twrp.Img.Href + "\n"
+	result = result + "    file: " + a.Archive.Override_twrp.Img.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Override_twrp.Img.Version + "\n"
+	result = result + "  TWRP Zip Override:" + "\n"
+	result = result + "    href: " + a.Archive.Override_twrp.Zip.Href + "\n"
+	result = result + "    file: " + a.Archive.Override_twrp.Zip.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Override_twrp.Zip.Version + "\n"
+	result = result + "  Logo:" + "\n"
+	result = result + "    href: " + a.Archive.Logo.Href + "\n"
+	result = result + "    file: " + a.Archive.Logo.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Logo.Version + "\n"
+	result = result + "  Flashme_pre:" + "\n"
+	result = result + "    href: " + a.Archive.Flashme_pre.Href + "\n"
+	result = result + "    file: " + a.Archive.Flashme_pre.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Flashme_pre.Version + "\n"
+	result = result + "  Flashme_post:" + "\n"
+	result = result + "    href: " + a.Archive.Flashme_post.Href + "\n"
+	result = result + "    file: " + a.Archive.Flashme_post.Filename + "\n"
+	result = result + "    ver : " + a.Archive.Flashme_post.Version + "\n"
 
-	logger.Log("User:")
-	logger.Log("  Rom:")
-	logger.Log("    name:", a.User.Rom.Name)
-	logger.Log("      href:", a.User.Rom.Href)
-	logger.Log("      file:", a.User.Rom.Filename)
-	logger.Log("      ver :", a.User.Rom.Version)
-	logger.Log("      Aver:", a.User.Rom.Android_version)
-	logger.Log("  TWRP Img:")
-	logger.Log("    href:", a.User.Twrp.Img.Href)
-	logger.Log("    file:", a.User.Twrp.Img.Filename)
-	logger.Log("    ver :", a.User.Twrp.Img.Version)
-	logger.Log("  TWRP Zip:")
-	logger.Log("    href:", a.User.Twrp.Zip.Href)
-	logger.Log("    file:", a.User.Twrp.Zip.Filename)
-	logger.Log("    ver :", a.User.Twrp.Zip.Version)
+	result = result + "User:" + "\n"
+	result = result + "  Rom:" + "\n"
+	result = result + "    name: " + a.User.Rom.Name + "\n"
+	result = result + "      href: " + a.User.Rom.Href + "\n"
+	result = result + "      file: " + a.User.Rom.Filename + "\n"
+	result = result + "      ver : " + a.User.Rom.Version + "\n"
+	result = result + "      Aver: " + a.User.Rom.Android_version + "\n"
+	result = result + "  TWRP Img:" + "\n"
+	result = result + "    href: " + a.User.Twrp.Img.Href + "\n"
+	result = result + "    file: " + a.User.Twrp.Img.Filename + "\n"
+	result = result + "    ver : " + a.User.Twrp.Img.Version + "\n"
+	result = result + "  TWRP Zip:" + "\n"
+	result = result + "    href: " + a.User.Twrp.Zip.Href + "\n"
+	result = result + "    file: " + a.User.Twrp.Zip.Filename + "\n"
+	result = result + "    ver : " + a.User.Twrp.Zip.Version + "\n"
+
+	return result
+}
+
+func (a *Available) Print() {
+	logger.Log(a.String())
 }
