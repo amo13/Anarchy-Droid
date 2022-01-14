@@ -78,7 +78,7 @@ func AospExtendedLatestAvailableHref(codename string) (string, error) {
 		return "", err
 	}
 
-	if data.Error {
+	if data.Error || data.Url == "" {
 		return "", fmt.Errorf("not available")
 	}
 
