@@ -116,7 +116,7 @@ func (a *Available) Populate(codename string) error {
 
 	var wg sync.WaitGroup
 	errs := make(chan RetrievalError)
-	wg.Add(17)
+	wg.Add(18)
 
 	go func() {
 		defer wg.Done()
@@ -302,6 +302,17 @@ func (a *Available) Populate(codename string) error {
 		}
 
 		logger.Log("Finished looking for AospExtended")
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := DivestosLatestAvailableHref(codename)
+		if err != nil {
+			errs <- RetrievalError{"DivestOS", err}
+		}
+
+		logger.Log("Finished looking for DivestOS")
 	}()
 
 	go func() {
