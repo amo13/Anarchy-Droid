@@ -21,6 +21,8 @@ import(
 
 	"os"
 	"fmt"
+	"flag"
+	"time"
 	"strings"
 	"runtime"
 	"net/url"
@@ -214,6 +216,11 @@ func finishInitApp() (bool, error) {
 		go logger.Report(map[string]string{"progress":"Setup Successful"})
 		active_screen = "mainScreen"
 		w.SetContent(mainScreen())
+
+		// Parse command line arguments and do stuff if needed
+		// like simulating a connected device
+		go doDevStuff()
+
 		return true, nil
 	} else {
 		go logger.Report(map[string]string{"progress":"Setup Failed"})
@@ -244,4 +251,30 @@ func selfUpdate(version string) error {
 	}
 	logger.Log("Successfully updated to version", latest.Version())
 	return fmt.Errorf("Update successful, please restart the application")
+}
+
+func doDevStuff() {
+	// Return if no command line arguments were provided
+	if len(os.Args) < 2 {
+		return
+	}
+
+	var simulate_model string
+
+	flag.StringVar(&simulate_model, "s", "", "Simulate the connection of a device model.")
+	flag.Parse()
+
+	if simulate_model != "" {
+		// Simulate the connection of the given device model
+		device.D1.Test(simulate_model)
+
+		// Wait for the availables struct to be populated
+		time.Sleep(3 * time.Second)
+		for get.A1.Reloading {
+			time.Sleep(1 * time.Second)
+		}
+
+		// And print it to stdout
+		fmt.Println(get.A1.String())
+	}
 }
