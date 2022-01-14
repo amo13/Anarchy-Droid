@@ -61,12 +61,23 @@ func Cmd(command string, args ...string) (stdout string, stderr string) {
 }
 
 func ReadFromURL(url string) ([]byte, error) {
-    resp, err := http.Get(url)
+    client := &http.Client{}
+
+    req, err := http.NewRequest("GET", url, nil)
     if err != nil {
+        logger.LogError("Unable to create http request for " + url, err)
+        return nil, err
+    }
+
+    req.Header.Set("User-Agent", "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion Anarchy-Droid/current")
+
+    resp, err := client.Do(req)
+    if err != nil {
+        logger.LogError("Unable to get http response for " + url, err)
         return nil, err
     }
     defer resp.Body.Close()
-
+    
     content, err := io.ReadAll(resp.Body)
     if err != nil {
         return nil, err
