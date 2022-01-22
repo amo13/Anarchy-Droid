@@ -152,7 +152,7 @@ Anarchy-Droid would not be possible without the work of the following projects:
 [Omnirom](https://www.omnirom.org),
 [CarbonROM](https://carbonrom.org),
 [AOSP-Extended](https://aospextended.com),
-[cdDroid](https://crdroid.net/),
+[crDroid](https://crdroid.net/),
 [/e/OS](https://e.foundation/e-os/),
 [TWRP](https://twrp.me),
 [MicroG](https://microg.org),
