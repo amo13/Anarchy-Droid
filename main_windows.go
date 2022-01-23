@@ -33,35 +33,33 @@ var active_screen string
 func main() {
 	// On Windows: allocate console and hide it (prevents flashing console windows on each call to adb.exe)
 	// App needs to be build as a gui app, e.g. with "fyne package" or with: -ldflags="-H windowsgui"
-	if runtime.GOOS == "windows" {
-		var kernel32_dll = windows.NewLazySystemDLL("Kernel32.dll")
-		var user32_dll = windows.NewLazySystemDLL("User32.dll")
+	var kernel32_dll = windows.NewLazySystemDLL("Kernel32.dll")
+	var user32_dll = windows.NewLazySystemDLL("User32.dll")
 
-		var proc_GetConsoleWindow = kernel32_dll.NewProc("GetConsoleWindow")
-		var proc_ShowWindow = user32_dll.NewProc("ShowWindow")
-		var proc_AllocConsole = kernel32_dll.NewProc("AllocConsole")
-		
-		successful_alloc_console, _, _ := proc_AllocConsole.Call()
-		if successful_alloc_console == 0 {
-			os.Exit(22)
-			return
-		}
+	var proc_GetConsoleWindow = kernel32_dll.NewProc("GetConsoleWindow")
+	var proc_ShowWindow = user32_dll.NewProc("ShowWindow")
+	var proc_AllocConsole = kernel32_dll.NewProc("AllocConsole")
+	
+	successful_alloc_console, _, _ := proc_AllocConsole.Call()
+	if successful_alloc_console == 0 {
+		os.Exit(22)
+		return
+	}
 
-		var console_hwnd uintptr
-		console_hwnd, _, err2 := proc_GetConsoleWindow.Call()
+	var console_hwnd uintptr
+	console_hwnd, _, err2 := proc_GetConsoleWindow.Call()
 
-		if err2 != syscall.Errno(0) {
-			os.Exit(2)
-			return
-		}
+	if err2 != syscall.Errno(0) {
+		os.Exit(2)
+		return
+	}
 
-		if console_hwnd == 0 {
-			os.Exit(3)
-			return
-		}
-		
-		proc_ShowWindow.Call(console_hwnd, 0)	// hide console
-	}	
+	if console_hwnd == 0 {
+		os.Exit(3)
+		return
+	}
+	
+	proc_ShowWindow.Call(console_hwnd, 0)	// hide console
 
 	// Set AppVersion to "DEVELOPMENT" if it was left empty
 	if AppVersion == "" {
