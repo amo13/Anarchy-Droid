@@ -27,7 +27,7 @@ jobs:
       run: go get fyne.io/fyne/v2/cmd/fyne
 
     - name: Package for Windows
-      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && mv anarchy-droid.exe pkg/Anarchy-Droid_windows_amd64.exe
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && ls -l && mv Anarchy-Droid.exe pkg/Anarchy-Droid_windows_amd64.exe
     
     - uses: actions/upload-artifact@v2
       with:
