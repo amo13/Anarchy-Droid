@@ -23,21 +23,21 @@ jobs:
     - name: Cross-compile for Windows
       run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ . && mv build/anarchy-droid.exe build/Anarchy-Droid_windows_amd64.exe
     
-#    - name: Install fyne
-#      run: go get fyne.io/fyne/v2/cmd/fyne
+    - name: Install fyne
+      run: go get fyne.io/fyne/v2/cmd/fyne
 
-#    - name: Package for Windows
-#      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && mv anarchy-droid.exe pkg/Anarchy-Droid_windows_amd64.exe
+    - name: Package for Windows
+      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && mv anarchy-droid.exe pkg/Anarchy-Droid_windows_amd64.exe
     
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: Anarchy-Droid (Windows)
-#        path: pkg
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid (Windows)
+        path: pkg
 
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: Anarchy-Droid_windows_amd64.exe
-#        path: pkg/Anarchy-Droid_windows_amd64.exe
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Anarchy-Droid_windows_amd64.exe
+        path: pkg/Anarchy-Droid_windows_amd64.exe
     
     - uses: actions/upload-artifact@v2
       with:
