@@ -64,9 +64,6 @@ func prepareFlash() error {
 			}
 		}
 
-		logger.Log("Bootloader unlocked successfully!")
-		Lbl_progressbar.SetText("Bootloader unlocked successfully!")
-		go logger.Report(map[string]string{"progress":"Unlock successful"})
 	} else {
 		err := bootTwrpStep()
 		if err != nil {
@@ -107,6 +104,10 @@ func unlockStep(unlock_code string) {
 			}
 			return
 		}
+
+		logger.Log("Bootloader unlocked successfully!")
+		Lbl_progressbar.SetText("Bootloader unlocked successfully!")
+		go logger.Report(map[string]string{"progress":"Unlock successful"})
 
 		Progressbar.Stop()
 
