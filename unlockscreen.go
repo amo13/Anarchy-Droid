@@ -91,3 +91,28 @@ func motorolaUnlockScreen() fyne.CanvasObject {
 
 	return Unlock_motorola_box
 }
+
+func fairphoneUnlockScreen() fyne.CanvasObject {
+	Lbl_unlocking_title := widget.NewLabelWithStyle("Unlock the device", fyne.TextAlignCenter ,fyne.TextStyle{Bold: true})
+	Lbl_unlock_info = widget.NewLabel("Follow the instructions:")
+	Lbl_unlock_info.Wrapping = fyne.TextWrapWord
+	Lbl_unlock_info.Alignment = fyne.TextAlignCenter
+	Lbl_unlock_data = widget.NewLabel("")
+	if device.D1.Imei != "" && device.D1.SerialNumber != "" {
+		Lbl_unlock_data.SetText("Your IMEI: " + device.D1.Imei + " - Your Serial Number: " + device.D1.SerialNumber + "\n")
+	}
+	btn_open_fairphone_website := widget.NewButton("Open Fairphone website", func() {OpenWebBrowser("https://www.fairphone.com/en/bootloader-unlocking-code-for-fairphone-3/")})
+
+	Unlock_fairphone_box := container.NewVBox(Lbl_unlocking_title, Lbl_unlock_data,
+		container.NewGridWithColumns(2,
+			Lbl_unlock_info,
+			btn_open_fairphone_website,
+			widget.NewLabelWithStyle("Once you are done:", fyne.TextAlignCenter ,fyne.TextStyle{}),
+			widget.NewButton("Continue", func() {
+				unlockStep("")
+			}),
+		),
+	)
+
+	return Unlock_fairphone_box
+}

@@ -55,15 +55,24 @@ func prepareFlash() error {
 			w.SetContent(sonyUnlockScreen())
 		case "motorola":
 			w.SetContent(motorolaUnlockScreen())
-		default:
-			err := device.D1.Unlock()
-			if err != nil {
-				logger.LogError("Unlocking the device seems to have failed:", err)
-				Lbl_flashing_instructions.SetText("Unlocking the device seems to have failed:\n" + err.Error())
-				return err
+		case "fairphone":
+			// No unlock code needed for FP2
+			if device.D1.Codename == "FP2" {
+				unlockStep("")
+			} else {
+				w.SetContent(fairphoneUnlockScreen())
 			}
-		}
+		default:
+			// Commented out: wouldn't the procedure get stuck here?
+			// err := device.D1.Unlock()
+			// if err != nil {
+			// 	logger.LogError("Unlocking the device seems to have failed:", err)
+			// 	Lbl_flashing_instructions.SetText("Unlocking the device seems to have failed:\n" + err.Error())
+			// 	return err
+			// }
 
+			unlockStep("")
+		}
 	} else {
 		err := bootTwrpStep()
 		if err != nil {
