@@ -165,6 +165,19 @@ func ImeiFromVarMap(m map[string]string) string {
 	return m["imei"]
 }
 
+func SerialNumber() (string, error) {
+	m, err := GetVarMap()
+	if unavailable(err) {
+		return "", err
+	}
+
+	return SerialNumberFromVarMap(m), nil
+}
+
+func SerialNumberFromVarMap(m map[string]string) string {
+	return m["serialno"]
+}
+
 func IsAB() (bool, error) {
 	m, err := GetVarMap()
 	if unavailable(err) {

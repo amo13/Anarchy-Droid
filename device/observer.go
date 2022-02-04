@@ -205,6 +205,16 @@ func (d *Device) ReadMissingProps() {
 			d.Imei = fastboot.ImeiFromVarMap(d.FastbootVars)
 		}
 	}
+	if d.SerialNumber == "" {
+		if d.State == "android" || d.State == "recovery" {
+			d.SerialNumber, err = adb.SerialNumber()
+			if err != nil {
+				logger.Log(err.Error())
+			}
+		} else if d.State == "fastboot" && len(d.FastbootVars) > 0 {
+			d.SerialNumber = fastboot.SerialNumberFromVarMap(d.FastbootVars)
+		}
+	}
 	if d.IsAB_checked == false {
 		if len(d.AdbProps) > 0 {
 			d.IsAB = adb.IsABFromPropMap(d.AdbProps)

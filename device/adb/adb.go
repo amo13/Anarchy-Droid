@@ -310,6 +310,20 @@ func ShowImeiOnDeviceScreen() error {
 	return nil
 }
 
+func SerialNumber() (string, error) {
+	props, err := GetPropMap()
+	if unavailable(err) {
+		return "", err
+	}
+
+	sn := props["ro.serialno"]
+	if sn == "" {
+		sn = props["ro.boot.serialno"]
+	}
+
+	return sn, nil
+}
+
 func AndroidVersion() (string, error) {
 	s, err := GetProp("ro.build.version.release")
 	if unavailable(err) {

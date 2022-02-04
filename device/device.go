@@ -38,6 +38,7 @@ func NewDevice() Device {
 		Name: "",
 		Arch: "",
 		Imei: "",
+		SerialNumber: "",
 		IsAB: false,
 		IsAB_checked: false,
 		IsUnlocked: false,
@@ -65,6 +66,7 @@ type Device struct {
 	Name string
 	Arch string
 	Imei string
+	SerialNumber string
 	IsAB bool
 	IsAB_checked bool
 	IsUnlocked bool
