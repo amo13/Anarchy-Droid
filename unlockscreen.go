@@ -38,7 +38,6 @@ func sonyUnlockScreen() fyne.CanvasObject {
 		container.NewGridWithColumns(2,
 			Lbl_unlock_data,
 			btn_open_sony_website,
-			// container.NewHBox(widget.NewLabel("Unlock code from the Sony website:"), input),
 			input,
 			widget.NewButton("Unlock and continue", func() {
 				if input.Text != "" {
