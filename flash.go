@@ -48,7 +48,7 @@ func prepareFlash() error {
 	if !device.D1.IsUnlocked && !Chk_skipunlock.Checked {
 		go logger.Report(map[string]string{"progress":"Unlock"})
 		logger.Log("Trying to unlock the bootloader...")
-		Lbl_progressbar.SetText("Trying to unlock the bootloader...")
+		Lbl_progressbar.SetText("Trying to unlock the bootloader...\n\nFollow the instructions on your device screen if needed.")
 
 		switch strings.ToLower(device.D1.Brand) {
 		case "sony":
