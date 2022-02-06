@@ -247,9 +247,11 @@ func GetPropMap() (map[string]string, error) {
 	m = make(map[string]string)
 	for _, pair := range lines {
 		// Remove trailing carriage return if found
-		if strings.HasSuffix(pair, string(13)) {
-			pair = pair[:len(pair)-1]
-		}
+		// if strings.HasSuffix(pair, string(13)) {
+		// 	pair = pair[:len(pair)-1]
+		// }
+		re := regexp.MustCompile(`\r?\n`)
+		pair = re.ReplaceAllString(pair, "")
 		// drop malformed prop lines (e.g. containing line breaks)
 		if !strings.HasPrefix(pair, "[") || !strings.HasSuffix(pair, "]") {
 			logger.Log("Dropped line from ADB getprop: " + pair)
