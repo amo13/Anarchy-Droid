@@ -19,7 +19,7 @@ import (
 )
 
 var D1 = NewDevice()
-var UnlockableBrands = []string{"sony", "motorola", "samsung", "nvidia", "oneplus"}
+var UnlockableBrands = []string{"sony", "motorola", "samsung", "nvidia", "oneplus", "fairphone"}
 
 func NewDevice() Device {
 	return Device{
