@@ -235,6 +235,7 @@ func YamlToFlatMap(yamldata []byte) (map[string]string, error) {
     return themap, nil
 }
 
+// Only downcase the keys, not the values
 func YamlToDowncaseFlatMap(yamldata []byte) (map[string]string, error) {
     orig, err := YamlToFlatMap(yamldata)
     if err != nil {
@@ -243,7 +244,7 @@ func YamlToDowncaseFlatMap(yamldata []byte) (map[string]string, error) {
 
     downcasecopy := make(map[string]string)
     for k, v := range orig {
-        downcasecopy[strings.ToLower(k)] = strings.ToLower(v)
+        downcasecopy[strings.ToLower(k)] = v
     }
 
     return downcasecopy, nil

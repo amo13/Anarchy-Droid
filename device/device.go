@@ -19,7 +19,7 @@ import (
 )
 
 var D1 = NewDevice()
-var UnlockableBrands = []string{"sony", "motorola", "samsung", "nvidia", "oneplus"}
+var UnlockableBrands = []string{"sony", "motorola", "samsung", "nvidia", "oneplus", "fairphone"}
 
 func NewDevice() Device {
 	return Device{
@@ -38,6 +38,7 @@ func NewDevice() Device {
 		Name: "",
 		Arch: "",
 		Imei: "",
+		SerialNumber: "",
 		IsAB: false,
 		IsAB_checked: false,
 		IsUnlocked: false,
@@ -65,6 +66,7 @@ type Device struct {
 	Name string
 	Arch string
 	Imei string
+	SerialNumber string
 	IsAB bool
 	IsAB_checked bool
 	IsUnlocked bool
@@ -198,6 +200,8 @@ func (d *Device) DoUnlock(unlock_data string) error {
 		return d.UnlockMotorola(unlock_data)
 	case "sony":
 		return d.UnlockSony(unlock_data)
+	case "fairphone":
+		return d.UnlockFairphone()
 	default:
 		return fastboot.UnlockGeneric()
 	}
@@ -220,6 +224,17 @@ func (d *Device) GetUnlockData() (string, error) {
 		} else {
 			// Also able to return Imei while ADB connected
 			return fastboot.GetUnlockData(d.Brand)
+		}
+	case "fairphone":
+		if d.Codename == "FP2" {
+			return "", fmt.Errorf("No unlock data needed")
+		} else {
+			if d.Imei != "" && d.SerialNumber != "" {
+				return d.Imei + " " + d.SerialNumber, nil
+			} else {
+				// Also able to return Imei while ADB connected
+				return fastboot.GetUnlockData(d.Brand)
+			}
 		}
 	default:
 		d.State_request = "fastboot"
@@ -248,6 +263,13 @@ func (d *Device) UnlockSony(unlock_code string) error {
 	<-d.State_reached	// blocks until fastboot is reached
 
 	return fastboot.UnlockSony(unlock_code)
+}
+
+func (d *Device) UnlockFairphone() error {
+	d.State_request = "fastboot"
+	<-d.State_reached	// blocks until fastboot is reached
+
+	return fastboot.UnlockFairphone()
 }
 
 // Boot a given recovery image.

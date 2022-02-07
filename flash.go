@@ -48,25 +48,31 @@ func prepareFlash() error {
 	if !device.D1.IsUnlocked && !Chk_skipunlock.Checked {
 		go logger.Report(map[string]string{"progress":"Unlock"})
 		logger.Log("Trying to unlock the bootloader...")
-		Lbl_progressbar.SetText("Trying to unlock the bootloader...")
+		Lbl_progressbar.SetText("Trying to unlock the bootloader...\n\nFollow the instructions on your device screen if needed.")
 
 		switch strings.ToLower(device.D1.Brand) {
 		case "sony":
 			w.SetContent(sonyUnlockScreen())
 		case "motorola":
 			w.SetContent(motorolaUnlockScreen())
-		default:
-			err := device.D1.Unlock()
-			if err != nil {
-				logger.LogError("Unlocking the device seems to have failed:", err)
-				Lbl_flashing_instructions.SetText("Unlocking the device seems to have failed:\n" + err.Error())
-				return err
+		case "fairphone":
+			// No unlock code needed for FP2
+			if device.D1.Codename == "FP2" {
+				unlockStep("")
+			} else {
+				w.SetContent(fairphoneUnlockScreen())
 			}
-		}
+		default:
+			// Commented out: wouldn't the procedure get stuck here?
+			// err := device.D1.Unlock()
+			// if err != nil {
+			// 	logger.LogError("Unlocking the device seems to have failed:", err)
+			// 	Lbl_flashing_instructions.SetText("Unlocking the device seems to have failed:\n" + err.Error())
+			// 	return err
+			// }
 
-		logger.Log("Bootloader unlocked successfully!")
-		Lbl_progressbar.SetText("Bootloader unlocked successfully!")
-		go logger.Report(map[string]string{"progress":"Unlock successful"})
+			unlockStep("")
+		}
 	} else {
 		err := bootTwrpStep()
 		if err != nil {
@@ -107,6 +113,10 @@ func unlockStep(unlock_code string) {
 			}
 			return
 		}
+
+		logger.Log("Bootloader unlocked successfully!")
+		Lbl_progressbar.SetText("Bootloader unlocked successfully!")
+		go logger.Report(map[string]string{"progress":"Unlock successful"})
 
 		Progressbar.Stop()
 

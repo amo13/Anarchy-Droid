@@ -165,6 +165,19 @@ func ImeiFromVarMap(m map[string]string) string {
 	return m["imei"]
 }
 
+func SerialNumber() (string, error) {
+	m, err := GetVarMap()
+	if unavailable(err) {
+		return "", err
+	}
+
+	return SerialNumberFromVarMap(m), nil
+}
+
+func SerialNumberFromVarMap(m map[string]string) string {
+	return m["serialno"]
+}
+
 func IsAB() (bool, error) {
 	m, err := GetVarMap()
 	if unavailable(err) {
@@ -236,6 +249,8 @@ func GetUnlockData(brand string) (string, error) {
 		return GetUnlockDataMotorola()
 	case "sony":
 		return GetUnlockDataSony()
+	case "fairphone":
+		return GetUnlockDataFairphone()
 	default:
 		return "", fmt.Errorf("not implemented")
 	}
@@ -300,6 +315,44 @@ func GetUnlockDataSony() (string, error) {
 	}
 }
 
+func GetUnlockDataFairphone() (string, error) {
+	if available() {
+		imei, err := Imei()
+		if err != nil {
+			logger.Log("Unable to retrieve imei:", err.Error())
+		}
+		sn, err := SerialNumber()
+		if err != nil {
+			logger.Log("Unable to retrieve SerialNumber:", err.Error())
+		}
+
+		if imei != "" && sn != "" {
+			return imei + " " + sn, nil
+		} else {
+			return "", fmt.Errorf("Unable to read IMEI and SN")
+		}
+	} else {
+		if helpers.IsStringInSlice(adb.State(), []string{"android","recovery"}) {
+			imei, err := adb.Imei()
+			if err != nil {
+				logger.Log("Unable to retrieve imei:", err.Error())
+			}
+			sn, err := adb.SerialNumber()
+			if err != nil {
+				logger.Log("Unable to retrieve SerialNumber:", err.Error())
+			}
+
+			if imei != "" && sn != "" {
+				return imei + " " + sn, nil
+			} else {
+				return "", fmt.Errorf("Unable to read IMEI and SN")
+			}
+		} else {
+			return "", fmt.Errorf("disconnected")
+		}
+	}
+}
+
 func Unlock(brand string, unlock_code string) error {
 	switch strings.ToLower(brand) {
 	case "motorola":
@@ -310,6 +363,8 @@ func Unlock(brand string, unlock_code string) error {
 		return UnlockOneplus()
 	case "nvidia":
 		return UnlockNvidia()
+	case "fairphone":
+		return UnlockFairphone()
 	case "generic":
 		return UnlockGeneric()
 	default:
@@ -378,6 +433,41 @@ func UnlockSony(unlock_code string) error {
 	} else if strings.Contains(strings.ToLower(result), "is unlocked") ||
 	strings.Contains(strings.ToLower(result), "succe") ||
 	strings.Contains(strings.ToLower(result), "okay") {
+		logger.Log("bootloader successfully unlocked")
+		return nil
+	} else {
+		logger.Log("unknown response")
+		return fmt.Errorf("unknown response")
+	}
+}
+
+func UnlockFairphone() error {
+	result, err := Cmd("flashing", "unlock")
+	if unavailable(err) {
+		return err
+	}
+
+	// Log the result for reference
+	logger.Log("-------- fastboot flashing unlock ---------")
+	logger.Log(result)
+	logger.Log("-------------------------------------------")
+
+	if strings.Contains(strings.ToLower(result), "allow oem unlock") {
+		logger.Log("OEM unlock has apparently not been enabled...")
+		return fmt.Errorf("not allowed")
+	} else if strings.Contains(strings.ToLower(result), "re-run this command") {
+		logger.Log("Re-running the unlock command to confirm unlock request...")
+		return UnlockFairphone()
+	} else if strings.Contains(strings.ToLower(result), "failed") {
+		logger.Log("bootloader unlock failed")
+		return fmt.Errorf("failed")
+	} else if strings.Contains(strings.ToLower(result), "already unlocked") {
+		logger.Log("bootloader already unlocked")
+		return nil
+	} else if strings.Contains(strings.ToLower(result), "is unlocked") ||
+	strings.Contains(strings.ToLower(result), "succe") ||
+	strings.Contains(strings.ToLower(result), "okay") ||
+	strings.Contains(strings.ToLower(result), "complete") {
 		logger.Log("bootloader successfully unlocked")
 		return nil
 	} else {
@@ -457,6 +547,8 @@ func BootRecovery(brand string, img_file string) error {
 		return bootRecoveryOneplus(img_file)
 	case "nvidia":
 		return bootRecoveryNvidia(img_file)
+	case "fairphone":
+		return bootRecoveryFairphone(img_file)
 	case "generic":
 		return bootRecoveryGeneric(img_file)
 	default:
@@ -473,6 +565,10 @@ func bootRecoverySony(img_file string) error {
 }
 
 func bootRecoveryOneplus(img_file string) error {
+	return bootRecoveryGeneric(img_file)
+}
+
+func bootRecoveryFairphone(img_file string) error {
 	return bootRecoveryGeneric(img_file)
 }
 
@@ -510,6 +606,8 @@ func FlashRecovery(brand string, img_file string, partition string) error {
 		return flashRecoveryOneplus(img_file, partition)
 	case "nvidia":
 		return flashRecoveryNvidia(img_file, partition)
+	case "fairphone":
+		return flashRecoveryFairphone(img_file, partition)
 	case "generic":
 		return flashRecoveryGeneric(img_file, partition)
 	default:
@@ -530,6 +628,10 @@ func flashRecoveryOneplus(img_file string, partition string) error {
 }
 
 func flashRecoveryNvidia(img_file string, partition string) error {
+	return flashRecoveryGeneric(img_file, partition)
+}
+
+func flashRecoveryFairphone(img_file string, partition string) error {
 	return flashRecoveryGeneric(img_file, partition)
 }
 
