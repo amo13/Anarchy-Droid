@@ -3,6 +3,7 @@ package get
 import(
 	"sync"
 	"strings"
+	"encoding/json"
 
 	"github.com/amo13/anarchy-droid/helpers"
 	"github.com/amo13/anarchy-droid/logger"
@@ -551,7 +552,9 @@ func (a *Available) String() string {
 		result = result + "      ver : " + a.Upstream.NanoDroid[module].Version + "\n"
 	}
 	
-	// Do not print OpenGapps to prevent flood
+	// OpenGapps:
+	opengapps_json, _ := json.Marshal(a.Upstream.OpenGapps)
+	result = result + "OpenGapps: " + string(opengapps_json) + "\n"
 
 	result = result + "Archive:" + "\n"
 	result = result + "  Roms:" + "\n"
