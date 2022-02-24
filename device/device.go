@@ -195,7 +195,7 @@ func (d *Device) DoUnlock(unlock_data string) error {
 	case "":
 		return fmt.Errorf("Unknown brand")
 	case "samsung":
-		return fmt.Errorf("No unlock needed on Samsung")
+		return nil // No unlock needed on Samsung devices
 	case "motorola":
 		return d.UnlockMotorola(unlock_data)
 	case "sony":
