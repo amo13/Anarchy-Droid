@@ -89,7 +89,14 @@ func (d *Device) changeDetected(new_state string) {
 	if helpers.IsStringInSlice(new_state, []string{"android", "recovery", "fastboot"}) {
 		d.ReadMissingProps()
 		if need_report {
-			logger.Report(map[string]string{"progress":"Device connected: " + D1.Model + " / " + D1.Codename})
+			device_lock_state := ""
+			if D1.IsUnlocked {
+				device_lock_state = "unlocked"
+			} else {
+				device_lock_state = "locked"
+			}
+
+			logger.Report(map[string]string{"progress":"Device connected: " + device_lock_state + " / " + D1.Model + " / " + D1.Codename})
 		}
 	}
 }
