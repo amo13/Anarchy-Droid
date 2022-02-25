@@ -86,10 +86,12 @@ func DivestosParseApiResponse(codename string) (DivestosApiResponse, error) {
     	logger.LogError("Unable to unmarshal response from " + url, err)
     }
 
-    if len(ApiResponseMap["response"]) != 1 {
-    	return ParsedDivestosApiResponse, fmt.Errorf("DivestOS gave an unexpected JSON response")
+    if len(ApiResponseMap["response"]) == 0 {
+    	return ParsedDivestosApiResponse, fmt.Errorf("DivestOS gave an unexpected JSON response: " + string(content))
     }
 	
+	// If there are more than one zip available,
+	// assume that the first one in the list is the latest.
 	return ApiResponseMap["response"][0], nil
 }
 
