@@ -300,7 +300,7 @@ func formatToOpenGappsAndroidVersion(v string) (string, error) {
 
 func openWebBrowserRomSource() {
 	if Radio_rom_source.Selected == "Archive" {
-		OpenWebBrowser("https://archive.free-droid.com/")
+		OpenWebBrowser("https://archive.anarchy-droid.com/")
 	} else {
 		openWebBrowserRom()
 	}

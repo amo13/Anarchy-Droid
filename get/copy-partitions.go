@@ -35,7 +35,7 @@ func CopyPartitionsZipLatestAvailableHref() (string, error) {
 		return A1.Upstream.CopyPartitions.Href, nil
 	}
 
-	url := "https://stuff.free-droid.com"
+	url := "https://stuff.anarchy-droid.com"
 
 	status_code, err := StatusCode(url)
 	if err != nil {
@@ -66,7 +66,7 @@ func CopyPartitionsZipLatestAvailableHref() (string, error) {
 
 	latest_available := versions_available_filtered[len(versions_available_filtered)-1]
 
-	dl_url := "https://stuff.free-droid.com/" + latest_available
+	dl_url := "https://stuff.anarchy-droid.com/" + latest_available
 
 	A1.Mutex.Lock()
 	defer A1.Mutex.Unlock()

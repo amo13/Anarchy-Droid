@@ -65,7 +65,7 @@ func Report(params map[string]string) {
 	}
 
 	// Submit the report
-	resp, err := http.Get("https://stats.free-droid.com/piwik.php?" + report)
+	resp, err := http.Get("https://stats.anarchy-droid.com/piwik.php?" + report)
 	if err != nil {
 	   LogError("Error submitting the report:", err)
 	}

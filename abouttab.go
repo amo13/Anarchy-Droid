@@ -20,7 +20,7 @@ func abouttab() fyne.CanvasObject {
 	info2 := widget.NewLabel("The collected data is publicly available: ")
 	info2.Alignment = fyne.TextAlignTrailing
 
-	href := "https://stats.free-droid.com/index.php?module=Widgetize&action=iframe&secondaryDimension=eventAction&disableLink=0&widget=1&moduleToWidgetize=Events&actionToWidgetize=getCategory&idSite=3&period=range&date=2019-07-01,today&disableLink=1&widget=1"
+	href := "https://stats.anarchy-droid.com/index.php?module=Widgetize&action=iframe&secondaryDimension=eventAction&disableLink=0&widget=1&moduleToWidgetize=Events&actionToWidgetize=getCategory&idSite=3&period=range&date=2019-07-01,today&disableLink=1&widget=1"
 	u, err := url.Parse(href)
 	if err != nil {
 		logger.LogError("unable to parse " + href + " as URL:", err)

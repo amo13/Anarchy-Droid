@@ -131,7 +131,7 @@ func helptab() fyne.CanvasObject {
 	}
 	link_to_official_drivers := widget.NewHyperlinkWithStyle("Official drivers", u1, fyne.TextAlignCenter, fyne.TextStyle{})
 
-	href2 := "https://stuff.free-droid.com/universaladbdriver_v6.0.zip"
+	href2 := "https://stuff.anarchy-droid.com/universaladbdriver_v6.0.zip"
 	u2, err := url.Parse(href2)
 	if err != nil {
 		logger.LogError("unable to parse " + href2 + " as URL:", err)

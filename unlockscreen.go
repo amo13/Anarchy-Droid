@@ -66,7 +66,7 @@ func motorolaUnlockScreen() fyne.CanvasObject {
 			// What now?
 		} else if err.Error() != "unlocked" {
 			logger.Log("Unlock data is:", unlock_data)
-			OpenWebBrowser("https://help.free-droid.com/unlock-motorola/?code=" + unlock_data)
+			OpenWebBrowser("https://help.anarchy-droid.com/unlock-motorola/?code=" + unlock_data)
 		} else {
 			logger.Log("Bootloader is already unlocked")
 			w.SetContent(flashingScreen())

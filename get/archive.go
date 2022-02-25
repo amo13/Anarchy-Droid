@@ -40,7 +40,7 @@ func FromArchive(codename string, what string) (string, error) {
 }
 
 func ArchiveLatestAvailableHrefMap(codename string) (map[string]string, error) {
-	url := "https://archive.free-droid.com/" + codename
+	url := "https://archive.anarchy-droid.com/" + codename
 
 	files, err := ArchiveLatestAvailableFileNamesMap(codename)
 	if err != nil {
@@ -150,7 +150,7 @@ func archivePopulateAvailablesStruct(folder string, filename string, href string
 }
 
 func (a *Available) PopulateArchive(codename string) (*Available, error) {
-	url := "https://archive.free-droid.com/" + codename
+	url := "https://archive.anarchy-droid.com/" + codename
 
 	files, err := ArchiveLatestAvailableFileNamesMap(codename)
 	if err != nil {
@@ -263,7 +263,7 @@ func (a *Available) writeArchiveValuesToStruct(folder string, filename string, h
 }
 
 func ArchiveLatestAvailableFileNamesMap(codename string) (map[string]string, error) {
-	url := "https://archive.free-droid.com/" + codename
+	url := "https://archive.anarchy-droid.com/" + codename
 
 	folders, err := archiveAvailableFolders(codename)
 	if err != nil {
@@ -303,7 +303,7 @@ func ArchiveLatestAvailableFileNamesMap(codename string) (map[string]string, err
 }
 
 func archiveAvailableFolders(codename string) ([]string, error) {
-	url := "https://archive.free-droid.com/" + codename
+	url := "https://archive.anarchy-droid.com/" + codename
 
 	status_code, err := StatusCode(url)
 	if err != nil {
