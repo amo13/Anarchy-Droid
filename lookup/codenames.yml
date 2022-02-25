@@ -256,12 +256,20 @@ oneplus 5 t: dumpling
 oneplus7t: hotdogb
 oneplus 7t: hotdogb
 oneplus 7 t: hotdogb
+HD1901: hotdogb
+HD1903: hotdogb
+HD1900: hotdogb
+HD1907: hotdogb
+HD1905: hotdogb
 oneplus7tpro: hotdog
 oneplus 7tpro: hotdog
 oneplus 7 tpro: hotdog
 oneplus7t pro: hotdog
 oneplus 7t pro: hotdog
 oneplus 7 t pro: hotdog
+HD1911: hotdog
+HD1913: hotdog
+HD1910: hotdog
 h815: h815
 a2001: oneplus2
 oneplus a2001: oneplus2
@@ -396,19 +404,54 @@ OnePlus7Pro: guacamole
 OnePlus 7Pro: guacamole
 OnePlus7 Pro: guacamole
 OnePlus 7 Pro: guacamole
+GM1911: guacamole
+GM1913: guacamole
+GM1917: guacamole
+GM1910: guacamole
+GM1915: guacamole
 OnePlus7: guacamoleb
 OnePlus 7: guacamoleb
+GM1901: guacamoleb
+GM1900: guacamoleb
+GM1905: guacamoleb
+GM1903: guacamoleb
 OnePlus8Pro: instantnoodlep
 OnePlus 8Pro: instantnoodlep
 OnePlus8 Pro: instantnoodlep
 OnePlus 8 Pro: instantnoodlep
+IN2023: instantnoodlep
+IN2020: instantnoodlep
+IN2021: instantnoodlep
+IN2025: instantnoodlep
 OnePlus8: instantnoodle
 OnePlus 8: instantnoodle
+IN2013: instantnoodle
+IN2017: instantnoodle
+IN2010: instantnoodle
+IN2019: instantnoodle
 oneplus8t: kebab
 oneplus 8t: kebab
 oneplus 8 t: kebab
+KB2001: kebab
+KB2000: kebab
+KB2003: kebab
+KB2005: kebab
 OnePlus9: lemonade
 OnePlus 9: lemonade
+LE2113: lemonade
+LE2111: lemonade
+LE2110: lemonade
+LE2117: lemonade
+LE2115: lemonade
+OnePlus9Pro: lemonadep
+OnePlus 9Pro: lemonadep
+OnePlus9 Pro: lemonadep
+OnePlus 9 Pro: lemonadep
+LE2121: lemonadep
+LE2125: lemonadep
+LE2123: lemonadep
+LE2120: lemonadep
+LE2127: lemonadep
 Fairphone 2: FP2
 fp2: FP2
 Fairphone 3: FP3
