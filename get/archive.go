@@ -280,7 +280,7 @@ func ArchiveLatestAvailableFileNamesMap(codename string) (map[string]string, err
 		c := colly.NewCollector()
 
 		c.OnError(func(_ *colly.Response, err error) {
-			logger.LogError("Error opening " + url + " :", err)
+			logger.LogError("Error opening " + folder_url + " :", err)
 		})
 
 		c.OnHTML("a", func(e *colly.HTMLElement) {
@@ -323,8 +323,12 @@ func archiveAvailableFolders(codename string) ([]string, error) {
 
 	c.OnHTML("a", func(e *colly.HTMLElement) {
 		if e.Text != "../" {	
-			// strip the trailing slash before appending
-			folders = append(folders, e.Text[:len(e.Text)-1])
+			// strip the trailing slash (if any) before appending
+			if strings.HasSuffix(e.Text, "/") {
+				folders = append(folders, e.Text[:len(e.Text)-1])
+			} else {
+				folders = append(folders, e.Text)
+			}
 		}
 	})
 
