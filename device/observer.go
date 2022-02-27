@@ -281,7 +281,7 @@ func (d *Device) isSameDevice(state string) bool {
 		if model != d.Model {
 			codename, err := lookup.ModelToCodename(model)
 			if err != nil {
-				if err.Error() != "ambiguous" {
+				if !strings.Contains(err.Error(), "ambiguous") {
 					logger.LogError("Unable to lookup model to codename:", err)
 				}
 
@@ -316,7 +316,7 @@ func (d *Device) isSameDevice(state string) bool {
 
 		if model != d.Model {
 			codename, err := lookup.ModelToCodename(model)
-			if err.Error() != "ambiguous" {
+			if !strings.Contains(err.Error(), "ambiguous") {
 				logger.LogError("Unable to lookup model to codename:", err)
 			} else {
 				return true

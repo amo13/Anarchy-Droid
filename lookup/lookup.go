@@ -589,7 +589,7 @@ func modelToCodenameCsv(model string) (string, error) {
 
 	if result == "" {
 		if len(matches) > 1 {
-			return "", fmt.Errorf("ambiguous")
+			return "", fmt.Errorf("ambiguous model " + model + " could be at least " + matches[0] + " and " + matches[1])
 		} else {
 			return "", fmt.Errorf("Unable to lookup codename for model %s with CSV", model)
 		}
