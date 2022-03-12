@@ -1,8 +1,8 @@
 package get
 
 func Zadig() error {
-	url := "https://github.com/pbatard/libwdi/releases/download/b755/zadig-2.6.exe"
-	fallback_url := "https://stuff.free-droid.com/zadig-2.6.exe"
+	url := "https://github.com/pbatard/libwdi/releases/download/v1.4.1/zadig-2.7.exe"
+	fallback_url := "https://stuff.free-droid.com/zadig-2.7.exe"
 
 	err := DownloadFile("bin/zadig.exe", url, "")
 	if err != nil {
