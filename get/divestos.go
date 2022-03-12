@@ -5,6 +5,7 @@ import (
 	"github.com/amo13/anarchy-droid/logger"
 
 	"encoding/json"
+	"strings"
 	"fmt"
 )
 
@@ -77,6 +78,10 @@ func DivestosParseApiResponse(codename string) (DivestosApiResponse, error) {
 	if err != nil {
 		logger.Log("DivestosParseApiResponse:", err.Error())
 		return ParsedDivestosApiResponse, err
+	}
+
+	if strings.Trim(string(content), " ") == "Unknown base/device" {
+		return ParsedDivestosApiResponse, fmt.Errorf("not available")
 	}
 
 	var ApiResponseMap map[string][]DivestosApiResponse
