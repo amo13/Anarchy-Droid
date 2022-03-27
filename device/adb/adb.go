@@ -97,15 +97,15 @@ func State() string {
 	// Call helpers.Cmd because we need stdout and stderr
 	stdout, stderr := helpers.Cmd(adb_command(), "get-state")
 
-	if strings.HasPrefix(stderr, "error: no device") {
+	if strings.Contains(stderr, "error: no devices/emulators found") {
 		return "disconnected"
-	} else if strings.HasPrefix(stderr, "error: device offline") {
+	} else if strings.Contains(stderr, "error: device offline") {
 		return "disconnected"
-	} else if strings.HasPrefix(stderr, "error: insufficient permissions") {
+	} else if strings.Contains(stderr, "error: insufficient permissions") {
 		return "unauthorized"
-	} else if strings.HasPrefix(stderr, "error: device unauthorized") {
+	} else if strings.Contains(stderr, "error: device unauthorized") {
 		return "unauthorized"
-	} else if strings.HasPrefix(stderr, "error: device still authorizing") {
+	} else if strings.Contains(stderr, "error: device still authorizing") {
 		return "unauthorized"
 	} else if strings.HasPrefix(stdout, "device") {
 		booting, _ := IsBooting()
