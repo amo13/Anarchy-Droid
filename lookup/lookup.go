@@ -113,6 +113,15 @@ func ModelToCodenameCandidates(model string) ([]string, error) {
 }
 
 func modelToCodenameYaml(model string) (string, error) {
+	// Check if the given model name already is the codename
+	ic, err := IsCodename(model)
+	if err != nil {
+		return "", err
+	}
+	if ic {
+		return model, nil
+	}
+
 	m, err := modelToCodenameYamlMap()
 	if err != nil {
 		return "", err
