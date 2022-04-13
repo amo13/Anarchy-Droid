@@ -287,6 +287,10 @@ func Imei() (string, error) {
 			return "", err
 		}
 
+		if s == "" {
+			return imei, fmt.Errorf("imei not found")
+		}
+
 		re1 := regexp.MustCompile(`\d\.`)
 		re2 := regexp.MustCompile(`\d`)
 		imei = strings.Join(re2.FindAllString(strings.Join(re1.FindAllString(s, -1), ""), -1), "")
@@ -294,6 +298,10 @@ func Imei() (string, error) {
 		s, err := Cmd("shell", "dumpsys", "iphonesubinfo")
 		if unavailable(err) {
 			return "", err
+		}
+
+		if s == "" {
+			return imei, fmt.Errorf("imei not found")
 		}
 		
 		re := regexp.MustCompile(`\d{15,}`)
