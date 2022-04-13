@@ -317,7 +317,7 @@ func recoveryPartitionYaml(codename string) (string, error) {
 		return "", err
 	}
 
-	return m[strings.ToLower(codename)], nil
+	return m[codename], nil
 }
 
 func recoveryPartitionYamlMap() (map[string]string, error) {
