@@ -17,8 +17,11 @@ jobs:
     - name: Update AppVersion and BuildDate
       run: chmod +x ./updateAppVersionAndBuildDate.sh && ./updateAppVersionAndBuildDate.sh
     
-    - name: Install fyne
+    - name: go get fyne
       run: go get fyne.io/fyne/v2/cmd/fyne
+
+    - name: go install fyne
+      run: go install fyne.io/fyne/v2/cmd/fyne
       
     - name: Package (macOS)
       run: fyne package -release && mkdir pkg && mv anarchy-droid.app pkg/Anarchy-Droid.app
