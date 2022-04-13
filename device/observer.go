@@ -77,7 +77,7 @@ func (d *Device) changeDetected(new_state string) {
 	if !d.Flashing && !d.isSameDevice(new_state) && helpers.IsStringInSlice(new_state, []string{"android", "recovery", "fastboot"}) {
 		logger.Log("New device detected, clearing and starting anew.")
 		d.StartOver()
-
+		logger.Log("New device is: " + d.Model + " / " + d.Codename)
 		need_report = true
 	}
 
