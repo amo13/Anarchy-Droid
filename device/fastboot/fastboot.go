@@ -270,7 +270,7 @@ func GetUnlockDataMotorola() (string, error) {
 	// parse and scrub the data
 	lines := strings.Split(data, "\n")
 	result := ""
-	if strings.HasPrefix(lines[0], "(bootloader) ") {
+	if strings.HasPrefix(strings.Trim(lines[0], " "), "(bootloader) ") {
 		if IsUnlockDataMotorolaParsable(data) {
 			for _, line := range lines {
 				if strings.HasPrefix(line, "(bootloader) ") {
@@ -280,7 +280,7 @@ func GetUnlockDataMotorola() (string, error) {
 				}
 			}
 		}
-	} else if strings.HasPrefix(lines[0], "INFO") {
+	} else if strings.HasPrefix(strings.Trim(lines[0], " "), "INFO") {
 		if IsUnlockDataMotorolaParsable(data) {
 			for _, line := range lines {
 				if strings.HasPrefix(line, "INFO") {
