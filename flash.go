@@ -334,6 +334,7 @@ func bootTwrpStep() error {
 					}
 				}
 			} else {
+				Lbl_flashing_instructions.SetText("Booting TWRP failed: " + err.Error())
 				logger.LogError("TWRP boot attempt returns the following error:", err)
 				return err
 			}

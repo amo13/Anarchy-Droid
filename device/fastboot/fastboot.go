@@ -587,7 +587,17 @@ func bootRecoveryGeneric(img_file string) error {
 	logger.Log(result)
 	logger.Log("-------------------------------------------")
 
-	if strings.Contains(result, "Sending") && strings.Contains(result, "Booting") && strings.Contains(result, "OKAY") {
+	if strings.Contains(result, "FAILED") || strings.Contains(result, "Command failed") {
+		// Extract the error message and return it
+		lines := strings.Split(strings.ReplaceAll(result, "\r\n", "\n"), "\n")
+		extracted := "fastboot command failed"
+		for _, line := range lines {
+			if strings.Contains(line, "FAILED") {
+				extracted = "FAILED" + strings.Split(line, "FAILED")[1]
+			}
+		}
+		return fmt.Errorf(extracted)
+	} else if strings.Contains(result, "Sending") && strings.Contains(result, "Booting") && strings.Contains(result, "OKAY") {
 		return nil
 	} else {
 		logger.Log("unknown response")
@@ -646,7 +656,17 @@ func flashRecoveryGeneric(img_file string, partition string) error {
 	logger.Log(result)
 	logger.Log("-------------------------------------------")
 
-	if strings.Contains(result, "no such partition") || strings.Contains(result, "invalid partition") {
+	if strings.Contains(result, "FAILED") || strings.Contains(result, "Command failed") {
+		// Extract the error message and return it
+		lines := strings.Split(strings.ReplaceAll(result, "\r\n", "\n"), "\n")
+		extracted := "fastboot command failed"
+		for _, line := range lines {
+			if strings.Contains(line, "FAILED") {
+				extracted = "FAILED" + strings.Split(line, "FAILED")[1]
+			}
+		}
+		return fmt.Errorf(extracted)
+	} else if strings.Contains(result, "no such partition") || strings.Contains(result, "invalid partition") {
 		logger.Log("unknown partition")
 		return fmt.Errorf("unknown partition")
 	} else {
