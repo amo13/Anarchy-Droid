@@ -69,12 +69,12 @@ func dlPlatformTools() error {
 }
 
 func dlHeimdall() error {
-	url := "https://github.com/amo13/Heimdall/releases/download/v1.4.2/"
+	base_url := "https://github.com/amo13/Heimdall/releases/download/v1.4.2/"
 	thisOS := runtime.GOOS
 	if thisOS == "darwin" {
 		thisOS = "macos"
 	}
-	url = url + "/heimdall-" + thisOS
+	url := base_url + "/heimdall-" + thisOS
 	if thisOS == "windows" {
 		url = url + ".exe"
 	}
@@ -84,6 +84,17 @@ func dlHeimdall() error {
 		if err != nil {
 			return err
 		}
+		// Download and unzip the dlls
+		dll_url := base_url + "dlls.zip"
+		err = DownloadFile("bin/heimdall/dlls.zip", dll_url, "")
+		if err != nil {
+			return err
+		}
+		err = helpers.Unzip("bin/heimdall/dlls.zip", "bin/heimdall")
+		if err != nil {
+			return err
+		}
+		logger.Log("Done extracting heimdall dll files")
 	} else {
 		err := DownloadFile("bin/heimdall/heimdall", url, "")
 		if err != nil {
