@@ -281,16 +281,16 @@ func bootTwrpStep() error {
 		}
 
 		if runtime.GOOS == "windows" {
-			Lbl_flashing_instructions.SetText("Waiting for bootloader... If drivers appear to be missing, a driver installation tool will automatically be launched for you...")
+			Lbl_flashing_instructions.SetText("Waiting for bootloader... Please have some patience: Windows might need to install drivers. If the drivers appear to be missing, a driver installation tool will automatically be launched for you...")
 		}
 
 		// TODO?
 		// Display "Install official drivers" button?
 
-		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 30)
+		reboot_instructions, err := device.D1.BootRecovery(Files["twrp_img"], 60)
 		if err != nil {
 			if err.Error() == "heimdall failed to access device" {
-				Lbl_flashing_instructions.SetText("Please install/replace the drivers for your device...\nSelect from the list what could be your device and press the button. (Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial.)")
+				Lbl_flashing_instructions.SetText("Please allow Zadig to launch and install/replace the drivers for your device.\nSelect from the list what could be your device and press the \"Replace Driver\" button.\n(Sometimes it can be names like 05c6:9008, SGH-T959V or Generic Serial. If the list is empty, click on \"Show all devices\" in the menu.)")
 				err = device.D1.InstallDriversWithZadig()
 				if err != nil {
 					logger.LogError("Failed to download zadig", err)
