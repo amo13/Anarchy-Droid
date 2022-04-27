@@ -71,6 +71,8 @@ func unavailable(err error) bool {
 	if err != nil {
 		if err.Error() == "disconnected" || err.Error() == "unauthorized" {
 			return true
+		} else if strings.Contains(err.Error(), "no devices/emulators found") {
+			return true
 		} else {
 			logger.LogError("Unknown ADB error:", err)
 		}
