@@ -130,6 +130,8 @@ func LineageosParseAndroidVersion(losversion string) (string, error) {
 		return "10", nil
 	case "18.1":
 		return "11", nil
+	case "19", "19.0", "19.1":
+		return "12", nil
 	default:
 		return "", fmt.Errorf("Unable to tell android version of LineageOS %s", losversion)
 	}
