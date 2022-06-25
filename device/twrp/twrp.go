@@ -95,7 +95,10 @@ func WipeClean() error {
 	time.Sleep(1 * time.Second)
 	err = wipe("data")
 	if err != nil {
-		return err
+		// No big deal because the data partition has
+		// been formatted successfully already
+		logger.Log("Error wiping the data partition. This is no big deal because it has just been formatted successfully.", err.Error())
+		return nil
 	}
 
 	return nil
