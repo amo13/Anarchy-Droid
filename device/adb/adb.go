@@ -64,7 +64,7 @@ func Cmd(args ...string) (stdout string, err error) {
 			return strings.Trim(strings.Trim(stdout + " " + stderr, "\n"), " "), fmt.Errorf(strings.Join(args, " ") + "failed: " + stdout + " " + stderr)
 		}
 		
-		logger.LogError("ADB command " + strings.Join(args, " ") + " gave an unexpected error:", fmt.Errorf("stderr: " + stderr + "; stdout: " + stdout))
+		logger.LogError("ADB command " + strings.Join(args, " ") + " gave an unexpected error:", fmt.Errorf("stderr: %s\nstdout: %s", stderr, stdout))
 	}
 
 	return strings.Trim(strings.Trim(stdout, "\n"), " "), nil
