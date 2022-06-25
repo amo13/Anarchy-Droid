@@ -68,6 +68,8 @@ func Report(params map[string]string) {
 	resp, err := http.Get("https://stats.anarchy-droid.com/piwik.php?" + report)
 	if err != nil {
 	   LogError("Error submitting the report:", err)
+	   resp.Body.Close()
+	   return
 	}
 	if resp.Status != "204 No Content" {
 		Log("Reporting failed with unexpected http status code", resp.Status)
