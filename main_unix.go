@@ -18,7 +18,7 @@ import (
 )
 
 const AppName = "Anarchy-Droid"
-var AppVersion string	// AppVersion infected from FyneApp.toml during build
+var AppVersion string	// AppVersion injected from FyneApp.toml during build
 var BuildDate string	// Build date injected during build
 // use: go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" .
 // or use sed to insert the values in place after checkout and before compilation:
@@ -104,6 +104,7 @@ func main() {
 
 	go func() {
 		go logger.Report(map[string]string{"progress":"Setup App"})
+		logger.Log("Setup Anarchy-Droid", AppVersion)
 		_, err := initApp()
 		// logger.Log(success)
 		if err != nil {
