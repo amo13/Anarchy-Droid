@@ -26,6 +26,7 @@ var BuildDate string
 var Consent bool
 var Device_model string
 var Device_codename string
+var LoggedErrors map[string]bool = map[string]bool{}
 
 func Report(params map[string]string) {
 	if params["tracking_consent"] == "false" || !Consent || AppVersion == "DEVELOPMENT" {
@@ -149,14 +150,19 @@ func Log(s ...string) {
 
 func LogError(message string, err error) {
 	if err.Error() != "cancelled" {
-		sentry.WithScope(func(scope *sentry.Scope) {
-			scope.SetUser(sentry.User{ID: session()["id"]})
-			if Device_codename != "" {
-				scope.SetTag("codename", Device_codename)
-				scope.SetTag("model", Device_model)
-			}
-			sentry.CaptureException(fmt.Errorf(message + " " + err.Error()))
-		})
+		// Only send error to sentry once, prevent flooding sentry
+		if LoggedErrors[err.Error()] == false {
+			sentry.WithScope(func(scope *sentry.Scope) {
+				scope.SetUser(sentry.User{ID: session()["id"]})
+				if Device_codename != "" {
+					scope.SetTag("codename", Device_codename)
+					scope.SetTag("model", Device_model)
+				}
+				sentry.CaptureException(fmt.Errorf(message + " " + err.Error()))
+			})
+			LoggedErrors[err.Error()] = true
+		}
+
 		Log("ERROR: " + message + " " + err.Error())
 	}
 }
