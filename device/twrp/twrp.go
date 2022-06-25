@@ -387,20 +387,42 @@ func SendNanodroidSetup(setup map[string]string) error {
         return err
     }
 
-    err = adb.Push(".nanodroid-setup", "/data/media/0/")
+    err = sendNanodroidSetupTo("/data/media/0/")
+    if err != nil {
+        err = sendNanodroidSetupTo("/external_sd/")
+        if err != nil {
+        	err = sendNanodroidSetupTo("/tmp/")
+        	if err != nil {
+        		return err
+        	}
+        }
+    }
+
+    return nil
+}
+
+func sendNanodroidSetupTo(dest string) error {
+	logger.Log("Sending .nanodroid-setup to " + dest)
+
+	err := adb.Push(".nanodroid-setup", dest)
     if err != nil {
         return err
     }
 
-    stdout, err := adb.Cmd("shell", "ls", "/data/media/0/.nanodroid-setup")
-    if err != nil {
-        logger.LogError("Error checking if .nanodroid-setup was sent successfully:", err)
-        return err
-    }
-    if strings.Contains(stdout, "No such file or directory") {
-    	logger.Log("Failed to send .nanodroid-setup!")
+    var path string
+    if strings.HasSuffix(dest, "/") {
+    	path = dest + ".nanodroid-setup"
+    } else {
+    	path = dest + "/" + ".nanodroid-setup"
     }
 
+    _, err = adb.Cmd("shell", "ls", path)
+    if err != nil {
+    	logger.Log("Failed to send .nanodroid-setup to " + dest + ":", err.Error())
+    	return err
+    }
+
+    logger.Log(".nanodroid-setup successfully received")
     return nil
 }
 
