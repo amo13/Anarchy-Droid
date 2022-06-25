@@ -58,6 +58,10 @@ func Cmd(args ...string) (stdout string, err error) {
 			}
 		} else if strings.Contains(stderr, "adb: failed to read command: Success") || strings.Contains(stderr, "adb: failed to read command: No error") {
 			return stdout, nil
+		} else if strings.Contains(stderr, "Service") && strings.Contains(stderr, "does not exist") {
+			return stdout, fmt.Errorf(stderr)
+		} else if strings.Contains(stdout + " " + stderr, "No such file or directory") {
+			return strings.Trim(strings.Trim(stdout + " " + stderr, "\n"), " "), fmt.Errorf(strings.Join(args, " ") + "failed: " + stdout + " " + stderr)
 		}
 		
 		logger.LogError("ADB command " + strings.Join(args, " ") + " gave an unexpected error:", fmt.Errorf("stderr: " + stderr + "; stdout: " + stdout))
