@@ -18,17 +18,17 @@ jobs:
       run: go build -ldflags "-s -w -X main.BuildDate=$(Get-Date -format 'u')" -o build/ .
     
     - name: Install fyne
-      run: go get fyne.io/fyne/v2/cmd/fyne
+      run: go install fyne.io/fyne/v2/cmd/fyne@latest
     
     - name: Package (Windows)
       run: fyne package -release -executable build/anarchy-droid.exe && mkdir pkg && mv anarchy-droid.exe pkg/
     
     - uses: actions/upload-artifact@v2
       with:
-        name: Anarchy-Droid-${{ runner.os }}-pkg
+        name: Anarchy-Droid-pkg
         path: pkg
     
     - uses: actions/upload-artifact@v2
       with:
-        name: Anarchy-Droid-${{ runner.os }}
+        name: Anarchy-Droid
         path: build
