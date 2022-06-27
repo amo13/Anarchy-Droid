@@ -14,23 +14,14 @@ jobs:
       with:
         go-version: "*"
 
-    - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev gcc-mingw-w64
-
     - name: Update AppVersion and BuildDate
       run: chmod +x ./updateAppVersionAndBuildDate.sh && ./updateAppVersionAndBuildDate.sh
 
-    - name: Cross-compile for Windows
-      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.BuildDate=`date +%Y-%m-%d` -X main.AppVersion=`awk -F'[ ="]+' '$1 == "Version" { print $2 }' FyneApp.toml`" -o build/ . #&& mv build/anarchy-droid.exe build/Anarchy-Droid_windows_amd64.exe
-    
-    - name: go get fyne
-      run: go get fyne.io/fyne/v2/cmd/fyne
-
     - name: go install fyne
-      run: go install fyne.io/fyne/v2/cmd/fyne
+      run: go install github.com/fyne-io/fyne-cross@latest
 
     - name: Package for Windows
-      run: CC=/usr/bin/x86_64-w64-mingw32-gcc-win32 CGO_ENABLED=1 fyne package -os windows -release -executable build/anarchy-droid.exe && mkdir -p pkg && ls -l && mv Anarchy-Droid.exe pkg/Anarchy-Droid_windows_amd64.exe
+      run: fyne-cross windows -arch=amd64 && mkdir -p pkg && mv fyne-cross/bin/windows-amd64/Anarchy-Droid.exe pkg/Anarchy-Droid_windows_amd64.exe && mv fyne-cross/dist/windows-amd64/Anarchy-Droid.exe.zip pkg/Anarchy-Droid.zip
     
     - uses: actions/upload-artifact@v2
       with:
@@ -41,8 +32,3 @@ jobs:
       with:
         name: Anarchy-Droid_windows_amd64.exe
         path: pkg/Anarchy-Droid_windows_amd64.exe
-    
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: Anarchy-Droid (Windows binary)
-#        path: build/Anarchy-Droid_windows_amd64.exe
