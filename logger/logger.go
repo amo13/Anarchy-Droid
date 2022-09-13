@@ -32,7 +32,7 @@ func Report(params map[string]string) {
 	if params["tracking_consent"] == "false" || !Consent || AppVersion == "DEVELOPMENT" {
 		Log("Skipped reporting:")
 		Log(mapToString(params))
-		// return
+		return
 	}
 
 	req, err := http.NewRequest("GET", "https://stats.anarchy-droid.com/matomo.php", nil)
