@@ -16,15 +16,11 @@ import(
 
 // Left side
 
-var Chk_magisk *widget.Check
+var Chk_reboot_after_installation *widget.Check
 var Chk_sigspoof *widget.Check
 var Chk_swype *widget.Check
 var Chk_gsync *widget.Check
 var Chk_copypartitions *widget.Check
-
-func openWebBrowserMagisk() {
-	OpenWebBrowser("https://github.com/topjohnwu/Magisk")
-}
 
 func openWebBrowserSigspoof() {
 	OpenWebBrowser("https://gitlab.com/Nanolx/NanoDroid/-/blob/master/doc/microGsetup.md")
@@ -104,8 +100,7 @@ func userTwrpSelected(urc fyne.URIReadCloser, err error) {
 
 func initAdvancedtabWidgets() {
 	// Left side
-	Chk_magisk = widget.NewCheck("Install Magisk (coming soon)", func(bool) {})
-	Chk_magisk.Disable()
+	Chk_reboot_after_installation = widget.NewCheck("Reboot after installation", func(bool) {})
 	Chk_sigspoof = widget.NewCheck("Signature Spoofing Patch", func(bool) {})
 	Chk_gsync = widget.NewCheck("Install Google Sync Adapters", func(bool) {})
 	Chk_swype = widget.NewCheck("Install Google Swype Libraries", func(bool) {})
@@ -123,16 +118,13 @@ func initAdvancedtabWidgets() {
 }
 
 func setDefaultsAdvancedtab() {
+	Chk_reboot_after_installation.SetChecked(true)
 	Chk_sigspoof.SetChecked(true)	
 	Chk_copypartitions.SetChecked(true)
 }
 
 func advancedtab() fyne.CanvasObject {
 	// Left side
-	magisk_info_icon := newTappableIcon(theme.InfoIcon())
-	magisk_info_icon.OnTapped = openWebBrowserMagisk
-	box_magisk := container.NewBorder(nil, nil, nil, magisk_info_icon, Chk_magisk)
-
 	sigspoof_info_icon := newTappableIcon(theme.InfoIcon())
 	sigspoof_info_icon.OnTapped = openWebBrowserSigspoof
 	box_sigspoof := container.NewBorder(nil, nil, nil, sigspoof_info_icon, Chk_sigspoof)
@@ -141,7 +133,7 @@ func advancedtab() fyne.CanvasObject {
 	copypartitions_info_icon.OnTapped = openWebBrowserCopyPartitions
 	box_copypartitions := container.NewBorder(nil, nil, nil, copypartitions_info_icon, Chk_copypartitions)
 
-	leftside := container.NewVBox(box_magisk, box_sigspoof, Chk_gsync, Chk_swype, box_copypartitions)
+	leftside := container.NewVBox(Chk_reboot_after_installation, box_sigspoof, Chk_gsync, Chk_swype, box_copypartitions)
 	leftcard := widget.NewCard("", "", leftside)
 
 	// Right side

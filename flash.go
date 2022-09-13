@@ -620,7 +620,9 @@ func finishInstallation() error {
 	device.D1.State_request = "recovery"
 	<-device.D1.State_reached	// blocks until recovery is reached
 
-	device.D1.Reboot("android")
+	if Chk_reboot_after_installation.Checked {
+		device.D1.Reboot("android")
+	}
 
 	time.Sleep(20 * time.Second)
 
@@ -712,23 +714,6 @@ func downloadFiles() (map[string]string, error) {
 	}
 	if twrp_zip_path != "" {
 		Files["twrp_zip"] = twrp_zip_path
-	}
-
-	magisk_path := ""
-	if Chk_magisk.Checked {
-		magisk_path = "flash/" + get.A1.Upstream.Magisk.Filename
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-
-			err := get.DownloadFile(magisk_path, get.A1.Upstream.Magisk.Href, get.A1.Upstream.Magisk.Checksum_url_suffix)
-			if err != nil {
-				errs <- RetrievalError{"Magisk", get.A1.Upstream.Magisk.Href, err}
-			}
-		}()
-	}
-	if magisk_path != "" {
-		Files["magisk"] = magisk_path
 	}
 
 	gapps_path := ""
