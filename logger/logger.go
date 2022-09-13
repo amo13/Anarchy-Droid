@@ -32,21 +32,40 @@ func Report(params map[string]string) {
 	if params["tracking_consent"] == "false" || !Consent || AppVersion == "DEVELOPMENT" {
 		Log("Skipped reporting:")
 		Log(mapToString(params))
-		return
+		// return
 	}
 
-	report := "idsite=3&rec=1&send_image=0"
-	report = report + "&_id=" + session()["id"]
-	report = report + "&new_visit=" + newVisit
+	req, err := http.NewRequest("GET", "https://stats.anarchy-droid.com/matomo.php", nil)
+	if err != nil {
+		LogError("Could not create http request for reporting", err)
+		return
+	}
+	q := req.URL.Query()
+
+	q.Add("idsite", "3")
+	q.Add("rec", "1")
+	q.Add("send_image", "0")
+	q.Add("_id", session()["id"])
+	q.Add("new_Visit", newVisit)
 	newVisit = "0"
-	report = report + "&ua=" + userAgent() + " Firefox/" + AppVersion
-	report = report + "&_cvar={\"1\":[\"Version\",\"" + AppVersion + "\"],\"2\":[\"Build\",\"" + BuildDate + "\"],\"3\":[\"Device Model\",\"" + Device_model + "\"],\"4\":[\"Device Codename\",\"" + Device_codename + "\"]}"
-	report = report + "&e_c=" + params["category"]
-	if params["action"] != "" { report = report + "&e_a=" + params["action"] }
-	if params["name"] != "" { report = report + "&e_n=" + params["name"] }
-	if params["value"] != "" { report = report + "&e_v=" + params["value"] }
-	if params["progress"] != "" { report = report + "&url=https://app/progress/" + params["progress"] }
-	if params["tracking"] != "" { report = report + "&url=https://app/tracking/" + params["tracking"] }
+	q.Add("ua", userAgent() + " Firefox/" + AppVersion)
+	q.Add("_cvar", "{\"1\":[\"Version\",\"" + AppVersion + "\"],\"2\":[\"Build\",\"" + BuildDate + "\"],\"3\":[\"Device Model\",\"" + Device_model + "\"],\"4\":[\"Device Codename\",\"" + Device_codename + "\"]}")
+	q.Add("e_c", params["category"])
+	if params["action"] != "" {
+		q.Add("e_a", params["action"])
+	}
+	if params["name"] != "" {
+		q.Add("e_n", params["name"])
+	}
+	if params["value"] != "" {
+		q.Add("e_v", params["value"])
+	}
+	if params["progress"] != "" {
+		q.Add("url", "https://app/progress/" + params["progress"])
+	}
+	if params["tracking"] != "" {
+		q.Add("url", "https://app/tracking/" + params["tracking"])
+	}
 	
 	// If more parameters are given, add them to the report with their respective values
 	// For this, remove the params taken into account and range over the rest
@@ -62,20 +81,17 @@ func Report(params map[string]string) {
 	delete(params, "tracking")
 
 	for k, v := range params {
-		report = report + "&" + k + "=" + v
+		q.Add(k, v)
 	}
 
-	// Submit the report
-	resp, err := http.Get("https://stats.anarchy-droid.com/piwik.php?" + report)
+	req.URL.RawQuery = q.Encode()
+	client := http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
-	   LogError("Error submitting the report:", err)
-	   resp.Body.Close()
-	   return
+		LogError("Error submitting the report:", err)
+		return
 	}
-	if resp.Status != "204 No Content" {
-		Log("Reporting failed with unexpected http status code", resp.Status)
-	}
-	resp.Body.Close()
 }
 
 func userAgent() string {
