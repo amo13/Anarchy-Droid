@@ -827,6 +827,7 @@ SM-T580: gtaxlwifi
 SM-A800I: a8hplte
 SM-T550: gt510wifi
 SM-T320: mondrianwifi
+SM-T800: chagallwifi
 SM-T805: chagalllte
 SM-T830: gts4lwifi
 SM-G550T: on5ltetmo
@@ -998,3 +999,6 @@ SM-A525F: a52q
 SM-A525F/DS: a52q
 SM-A525M: a52q
 SM-A525M/DS: a52q
+SM-P905: viennalte
+SM-T900: v2awifi
+SM-T520: n2awifi
