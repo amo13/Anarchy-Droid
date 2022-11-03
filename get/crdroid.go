@@ -141,7 +141,11 @@ func CrDroidLatestAvailableHref(codename string) (string, error) {
 	A1.Upstream.Rom["crDroid"].Name = "crDroid"
 	A1.Upstream.Rom["crDroid"].Href = dl_url
 	A1.Upstream.Rom["crDroid"].Checksum_url_suffix = ""
-	A1.Upstream.Rom["crDroid"].Filename = helpers.ExtractFileNameFromHref(dl_url)
+	filename := helpers.ExtractFileNameFromHref(dl_url)
+	if strings.Contains(filename, ".zip?") && len(strings.Split(filename, ".zip?")) > 0 {
+		filename = strings.Split(filename, ".zip?")[0] + ".zip"
+	}
+	A1.Upstream.Rom["crDroid"].Filename = filename
 	v, err := CrDroidParseVersion(A1.Upstream.Rom["crDroid"].Filename)
 	if err != nil {
 		return latest_available, fmt.Errorf("unable to parse CrDroid version in %s", A1.Upstream.Rom["crDroid"].Filename)
