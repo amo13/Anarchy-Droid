@@ -567,6 +567,19 @@ func finishInstallation() error {
 		time.Sleep(1 * time.Second)
 	}
 
+	if Files["playstore"] != "" {
+		logger.Log("Start playstore installation...")
+		go logger.Report(map[string]string{"progress":"Flash Playstore"})
+		Lbl_progressbar.SetText("Installing Playstore...")
+		err := device.D1.FlashZip(Files["playstore"])
+		if err != nil {
+			logger.LogError("Error flashing " + Files["playstore"] + ":", err)
+			logger.Log("Proceeding anyway...")
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+
 	if Files["fdroid"] != "" {
 		logger.Log("Start F-Droid installation...")
 		go logger.Report(map[string]string{"progress":"Flash F-Droid"})
@@ -580,6 +593,9 @@ func finishInstallation() error {
 		time.Sleep(1 * time.Second)
 	}
 
+	// Should not happen any more since the switch from NanoDroid to MinMicroG
+	// The only way to get the google sync adapters and swype libs is to
+	// use the full "Standard" MinMicroG installer containing them
 	if Files["gsyncswype"] != "" {
 		logger.Log("Start Gsync/Swype installation...")
 		go logger.Report(map[string]string{"progress":"Flash Gsync or swype"})
@@ -742,18 +758,43 @@ func downloadFiles() (map[string]string, error) {
 			}()
 		}
 	} else if Select_gapps.Selected == "MicroG" {
-		// Following roms already include MicroG according to https://github.com/microg/GmsCore/wiki/Signature-Spoofing (30.08.2021)
-		if Chk_aurora.Checked || Chk_playstore.Checked || !helpers.IsStringInSlice(get.A1.User.Rom.Name, []string{"LineageOSMicroG", "CalyxOS", "eOS"}) {
-			gapps_path = "flash/" + get.A1.Upstream.NanoDroid["MicroG"].Filename
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+		// if Chk_aurora.Checked || Chk_playstore.Checked || !helpers.IsStringInSlice(get.A1.User.Rom.Name, []string{"LineageOSMicroG", "CalyxOS", "eOS"}) {
+		// 	gapps_path = "flash/" + get.A1.Upstream.NanoDroid["MicroG"].Filename
+		// 	wg.Add(1)
+		// 	go func() {
+		// 		defer wg.Done()
 
-				err := get.DownloadFile(gapps_path, get.A1.Upstream.NanoDroid["MicroG"].Href, get.A1.Upstream.NanoDroid["MicroG"].Checksum_url_suffix)
-				if err != nil {
-					errs <- RetrievalError{"NanoDroid-MicroG", get.A1.Upstream.NanoDroid["MicroG"].Href, err}
-				}
-			}()
+		// 		err := get.DownloadFile(gapps_path, get.A1.Upstream.NanoDroid["MicroG"].Href, get.A1.Upstream.NanoDroid["MicroG"].Checksum_url_suffix)
+		// 		if err != nil {
+		// 			errs <- RetrievalError{"NanoDroid-MicroG", get.A1.Upstream.NanoDroid["MicroG"].Href, err}
+		// 		}
+		// 	}()
+		// }
+		// Following roms already include MicroG according to https://github.com/microg/GmsCore/wiki/Signature-Spoofing (30.08.2021)
+		if !helpers.IsStringInSlice(get.A1.User.Rom.Name, []string{"LineageOSMicroG", "CalyxOS", "eOS"}) {
+			if (Chk_gsync.Checked || Chk_swype.Checked) {
+				gapps_path = "flash/" + get.A1.Upstream.MinMicroG["Standard"].Filename
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+
+					err := get.DownloadFile(gapps_path, get.A1.Upstream.MinMicroG["Standard"].Href, get.A1.Upstream.MinMicroG["Standard"].Checksum_url_suffix)
+					if err != nil {
+						errs <- RetrievalError{"MinMicroG-Standard", get.A1.Upstream.MinMicroG["Standard"].Href, err}
+					}
+				}()
+			} else {
+				gapps_path = "flash/" + get.A1.Upstream.MinMicroG["NoGoolag"].Filename
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+
+					err := get.DownloadFile(gapps_path, get.A1.Upstream.MinMicroG["NoGoolag"].Href, get.A1.Upstream.MinMicroG["NoGoolag"].Checksum_url_suffix)
+					if err != nil {
+						errs <- RetrievalError{"MinMicroG-NoGoolag", get.A1.Upstream.MinMicroG["NoGoolag"].Href, err}
+					}
+				}()
+			}
 		}
 	}
 	if gapps_path != "" {
@@ -762,21 +803,38 @@ func downloadFiles() (map[string]string, error) {
 
 	aurora_path := ""
 	// Only if we don't want MicroG but still want Aurora Store.
-	// If we want the Play Store with MicroG, we already have the MicroG zip containing the Play Store
 	if (Chk_aurora.Checked && Select_gapps.Selected != "MicroG") {
-		aurora_path = "flash/" + get.A1.Upstream.NanoDroid["MicroG"].Filename
+		aurora_path = "flash/" + get.A1.Upstream.MinMicroG["AuroraServices"].Filename
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			err := get.DownloadFile(aurora_path, get.A1.Upstream.NanoDroid["MicroG"].Href, get.A1.Upstream.NanoDroid["MicroG"].Checksum_url_suffix)
+			err := get.DownloadFile(aurora_path, get.A1.Upstream.MinMicroG["AuroraServices"].Href, get.A1.Upstream.MinMicroG["AuroraServices"].Checksum_url_suffix)
 			if err != nil {
-				errs <- RetrievalError{"NanoDroid-MicroG", get.A1.Upstream.NanoDroid["MicroG"].Href, err}
+				errs <- RetrievalError{"MinMicroG-AuroraServices", get.A1.Upstream.MinMicroG["AuroraServices"].Href, err}
 			}
 		}()
 	}
 	if aurora_path != "" {
 		Files["aurora"] = aurora_path
+	}
+
+	playstore_path := ""
+	// Only if we don't want MicroG but still want Aurora Store.
+	if Chk_playstore.Checked && !strings.HasPrefix(Files["gapps"], "MinMicroG-Standard") {
+		playstore_path = "flash/" + get.A1.Upstream.MinMicroG["Playstore"].Filename
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			err := get.DownloadFile(playstore_path, get.A1.Upstream.MinMicroG["Playstore"].Href, get.A1.Upstream.MinMicroG["Playstore"].Checksum_url_suffix)
+			if err != nil {
+				errs <- RetrievalError{"MinMicroG-Playstore", get.A1.Upstream.MinMicroG["Playstore"].Href, err}
+			}
+		}()
+	}
+	if playstore_path != "" {
+		Files["playstore"] = playstore_path
 	}
 
 	fdroid_path := ""
@@ -819,22 +877,22 @@ func downloadFiles() (map[string]string, error) {
 		Files["patcher"] = patcher_path
 	}
 
-	gsyncswype_path := ""
-	if (Chk_gsync.Checked || Chk_swype.Checked) && Select_gapps.Selected != "OpenGapps" {
-		gsyncswype_path = "flash/" + get.A1.Upstream.NanoDroid["Google"].Filename
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	// gsyncswype_path := ""
+	// if (Chk_gsync.Checked || Chk_swype.Checked) && Select_gapps.Selected != "OpenGapps" {
+	// 	gsyncswype_path = "flash/" + get.A1.Upstream.NanoDroid["Google"].Filename
+	// 	wg.Add(1)
+	// 	go func() {
+	// 		defer wg.Done()
 
-			err := get.DownloadFile(gsyncswype_path, get.A1.Upstream.NanoDroid["Google"].Href, get.A1.Upstream.NanoDroid["Google"].Checksum_url_suffix)
-			if err != nil {
-				errs <- RetrievalError{"Gsync/Swype", get.A1.Upstream.NanoDroid["Google"].Href, err}
-			}
-		}()
-	}
-	if gsyncswype_path != "" {
-		Files["gsyncswype"] = gsyncswype_path
-	}
+	// 		err := get.DownloadFile(gsyncswype_path, get.A1.Upstream.NanoDroid["Google"].Href, get.A1.Upstream.NanoDroid["Google"].Checksum_url_suffix)
+	// 		if err != nil {
+	// 			errs <- RetrievalError{"Gsync/Swype", get.A1.Upstream.NanoDroid["Google"].Href, err}
+	// 		}
+	// 	}()
+	// }
+	// if gsyncswype_path != "" {
+	// 	Files["gsyncswype"] = gsyncswype_path
+	// }
 
 	copypartitions_path := ""
 	copypartitions_path = "flash/" + get.A1.Upstream.CopyPartitions.Filename

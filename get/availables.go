@@ -24,6 +24,7 @@ func NewAvailable() *Available {
 				Zip: &Item{},
 			},
 			NanoDroid: make(map[string]*Item),
+			MinMicroG: make(map[string]*Item),
 			// OpenGapps["arm"]["10.0"] --> [pico nano micro mini ...]
 			OpenGapps: make(map[string]map[string][]string),
 			Magisk: &Item{},
@@ -68,6 +69,7 @@ type Upstream struct {
 	Romlist []string
 	Twrp *Twrp
 	NanoDroid map[string]*Item
+	MinMicroG map[string]*Item
 	OpenGapps map[string]map[string][]string
 	Magisk *Item
 	CopyPartitions *Item
@@ -117,7 +119,7 @@ func (a *Available) Populate(codename string) error {
 
 	var wg sync.WaitGroup
 	errs := make(chan RetrievalError)
-	wg.Add(18)
+	wg.Add(19)
 
 	go func() {
 		defer wg.Done()
@@ -139,7 +141,18 @@ func (a *Available) Populate(codename string) error {
 		}
 
 		logger.Log("Finished looking for TWRP-Zip")
-	}()	
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := MinMicroGLatestAvailableVariants()
+		if err != nil {
+			errs <- RetrievalError{"MinMicroG", err}
+		}
+
+		logger.Log("Finished looking for MinMicroG")
+	}()
 
 	go func() {
 		defer wg.Done()

@@ -22,6 +22,42 @@ var Chk_swype *widget.Check
 var Chk_gsync *widget.Check
 var Chk_copypartitions *widget.Check
 
+func chkGsyncChanged(checked bool) {
+	if checked {
+		Chk_swype.Checked = true
+		Chk_swype.Refresh()
+		Chk_playstore.Checked = true
+		Chk_playstore.Disable()
+		Chk_playstore.Refresh()
+		// Chk_aurora.Checked = true
+		// Chk_aurora.Disable()
+		// Chk_aurora.Refresh()
+	} else {
+		Chk_swype.Checked = false
+		Chk_swype.Refresh()
+		Chk_playstore.Enable()
+		// Chk_aurora.Enable()
+	}
+}
+
+func chkSwypeChanged(checked bool) {
+	if checked {
+		Chk_gsync.Checked = true
+		Chk_gsync.Refresh()
+		Chk_playstore.Checked = true
+		Chk_playstore.Disable()
+		Chk_playstore.Refresh()
+		// Chk_aurora.Checked = true
+		// Chk_aurora.Disable()
+		// Chk_aurora.Refresh()
+	} else {
+		Chk_gsync.Checked = false
+		Chk_gsync.Refresh()
+		Chk_playstore.Enable()
+		// Chk_aurora.Enable()
+	}
+}
+
 func openWebBrowserSigspoof() {
 	OpenWebBrowser("https://gitlab.com/Nanolx/NanoDroid/-/blob/master/doc/microGsetup.md")
 }
@@ -97,13 +133,12 @@ func userTwrpSelected(urc fyne.URIReadCloser, err error) {
 	get.A1.User.Twrp.Img.Filename = helpers.ExtractFileNameFromHref(urc.URI().String())
 }
 
-
 func initAdvancedtabWidgets() {
 	// Left side
 	Chk_reboot_after_installation = widget.NewCheck("Reboot after installation", func(bool) {})
 	Chk_sigspoof = widget.NewCheck("Signature Spoofing Patch", func(bool) {})
-	Chk_gsync = widget.NewCheck("Install Google Sync Adapters", func(bool) {})
-	Chk_swype = widget.NewCheck("Install Google Swype Libraries", func(bool) {})
+	Chk_gsync = widget.NewCheck("Install Google Sync Adapters", chkGsyncChanged)
+	Chk_swype = widget.NewCheck("Install Google Swype Libraries", chkSwypeChanged)
 	Chk_copypartitions = widget.NewCheck("Flash copy-partitions.zip", func(bool) {})
 
 	// Right side

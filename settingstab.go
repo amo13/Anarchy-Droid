@@ -135,8 +135,6 @@ func compileSelectableRomList() []string {
 	}
 }
 
-
-
 func chkUserRomChanged(checked bool) {
 	if checked {
 		Select_rom.Disable()
@@ -347,7 +345,8 @@ func selectGappsChanged(value string) {
 		Chk_playstore.SetChecked(false)
 		Chk_playstore.Enable()
 		Chk_aurora.SetChecked(true)
-		Chk_aurora.Enable()
+		// Chk_aurora.Enable()
+		Chk_aurora.Disable()
 		Select_opengapps_variant.Disable()
 		Select_opengapps_version.Disable()
 		Chk_sigspoof.SetChecked(true)
@@ -429,8 +428,12 @@ func openWebBrowserAurora() {
 	OpenWebBrowser("https://gitlab.com/AuroraOSS/AuroraStore")
 }
 
-func openWebBrowserOpengappsVariants() {
-	OpenWebBrowser("https://github.com/opengapps/opengapps/wiki/Package-Comparison")
+func openWebBrowserGappsVariants() {
+	if Select_gapps.Selected == "OpenGapps" {
+		OpenWebBrowser("https://github.com/opengapps/opengapps/wiki/Package-Comparison")
+	} else if Select_gapps.Selected == "MicroG" {
+		OpenWebBrowser("https://github.com/FriendlyNeighborhoodShane/MinMicroG#what-is-this")
+	}
 }
 
 func openWebBrowserFdroid() {
@@ -543,7 +546,7 @@ func settingstab() fyne.CanvasObject {
 	box_gapps := container.NewBorder(nil, nil, nil, gapps_info_icon, Select_gapps)
 
 	opengappsvariants_info_icon := newTappableIcon(theme.InfoIcon())
-	opengappsvariants_info_icon.OnTapped = openWebBrowserOpengappsVariants
+	opengappsvariants_info_icon.OnTapped = openWebBrowserGappsVariants
 	box_opengappsvariants := container.NewBorder(nil, nil, nil, opengappsvariants_info_icon, Select_opengapps_variant)
 
 	box_opengappsvervar := container.NewHBox(Select_opengapps_version, layout.NewSpacer(), box_opengappsvariants)
