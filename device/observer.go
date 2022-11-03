@@ -107,6 +107,7 @@ func (d *Device) StartOver() {
 
 	// Read ADB props and fastboot vars if not done yet
 	if helpers.IsStringInSlice(D1.GetState(), []string{"android", "recovery", "fastboot"}) {
+		logger.Log("Reading missing device props...")
 		D1.ReadMissingProps()
 	}
 }
