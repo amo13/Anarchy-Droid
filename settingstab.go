@@ -345,7 +345,7 @@ func selectGappsChanged(value string) {
 		Chk_playstore.SetChecked(false)
 		Chk_playstore.Enable()
 		Chk_aurora.SetChecked(true)
-		Chk_aurora.Disable()
+		Chk_aurora.Enable()
 		Select_opengapps_variant.Disable()
 		Select_opengapps_version.Disable()
 		Chk_sigspoof.SetChecked(true)
