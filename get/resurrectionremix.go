@@ -49,28 +49,28 @@ func ResurrectionRemixLatestAvailableHref(codename string) (string, error) {
 		}
 	}
 
-	var redirect_url string
+	base_url := "https://sourceforge.net/projects/resurrectionremix-ten/files/"
 
-	// Follow redirects to the actual file URL from a mirror
-	resp, err := http.Head("https://get.resurrectionremix.com/")
-	if err != nil {
-		logger.LogError("Error requesting (following redirect from) https://get.resurrectionremix.com/:", err)
-	} else {
-		redirect_url = resp.Request.URL.String()
-	}
-
-	if redirect_url == "" {
-		return "", fmt.Errorf("Unable to get sourceforge redirection link for Resurrection Remix: redirection url empty")
-	}
-
-	device_url := redirect_url + codename + "/"
+	device_url := base_url + codename + "/"
 
 	status_code, err := StatusCode(device_url)
 	if err != nil {
 		return "", err
 	}
 	if status_code != "200 OK" {
-		return "", fmt.Errorf("not available")
+		// return "", fmt.Errorf("not available")
+
+		base_url = "https://sourceforge.net/projects/resurrectionremix/files/"
+
+		device_url = base_url + codename + "/"
+
+		status_code, err := StatusCode(device_url)
+		if err != nil {
+			return "", err
+		}
+		if status_code != "200 OK" {
+			return "", fmt.Errorf("not available")
+		}
 	}
 
 	versions_available := make([]string, 0)
@@ -125,7 +125,11 @@ func ResurrectionRemixLatestAvailableHref(codename string) (string, error) {
 	A1.Upstream.Rom["ResurrectionRemix"].Name = "ResurrectionRemix"
 	A1.Upstream.Rom["ResurrectionRemix"].Href = dl_url
 	A1.Upstream.Rom["ResurrectionRemix"].Checksum_url_suffix = ""
-	A1.Upstream.Rom["ResurrectionRemix"].Filename = helpers.ExtractFileNameFromHref(dl_url)
+	filename := helpers.ExtractFileNameFromHref(dl_url)
+	if strings.Contains(filename, ".zip?") && len(strings.Split(filename, ".zip?")) > 0 {
+		filename = strings.Split(filename, ".zip?")[0] + ".zip"
+	}
+	A1.Upstream.Rom["ResurrectionRemix"].Filename = filename
 	v, err := ResurrectionRemixParseVersion(A1.Upstream.Rom["ResurrectionRemix"].Filename)
 	if err != nil {
 		return latest_available, fmt.Errorf("unable to parse ResurrectionRemix version in %s", A1.Upstream.Rom["ResurrectionRemix"].Filename)
