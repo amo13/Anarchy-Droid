@@ -13,7 +13,7 @@ import (
 	"fmt"
 )
 
-// Download latest OpenGapps zip into flash folder and return the file name
+// Download latest MinMicroG zip into flash folder and return the file name
 func MinMicroG(variant string) (string, error) {
 	variants, err := MinMicroGLatestAvailableVariants()
 	if err != nil {
@@ -36,7 +36,7 @@ func MinMicroG(variant string) (string, error) {
 	return file_name, nil
 }
 
-// Returns file name of the latest available OpenGapps zip
+// Returns variants of the latest available MinMicroG zip
 func MinMicroGLatestAvailableVariants() (map[string]*Item, error) {
 	if len(A1.Upstream.MinMicroG) > 0 {
 		return A1.Upstream.MinMicroG, nil
@@ -98,7 +98,7 @@ func MinMicroGLatestAvailableVariants() (map[string]*Item, error) {
 	return variants, nil
 }
 
-// Returns download link of the latest available NanoDroid zip
+// Returns download link of the latest available MinMicroG zip
 func MinMicroGLatestAvailableHref(variant string) (string, error) {
 	variants, err := MinMicroGLatestAvailableVariants()
 	if err != nil {
