@@ -902,7 +902,7 @@ func downloadFiles() (map[string]string, error) {
 	}
 
 	fdroid_path := ""
-	if Chk_fdroid.Checked {
+	if Chk_fdroid.Checked && Select_gapps.Selected != "MicroG" {
 		// LineageOSMicrog has F-Droid preinstalled
 		if get.A1.User.Rom.Name != "LineageOSMicroG" {
 			fdroid_path = "flash/" + get.A1.Upstream.NanoDroid["Fdroid"].Filename
