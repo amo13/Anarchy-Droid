@@ -27,11 +27,11 @@ func mainScreen() fyne.CanvasObject {
 	launchGuiUpdateLoop()
 
 	tabs := container.NewAppTabs(
-		container.NewTabItem("        Start        ", starttab()),
-		container.NewTabItem("       Settings      ", settingstab()),
-		container.NewTabItem("       Advanced      ", advancedtab()),
-		container.NewTabItem("         Help        ", helptab()),
-		container.NewTabItem("         About        ", abouttab()),
+		container.NewTabItem("          Start         ", starttab()),
+		container.NewTabItem("         Settings       ", settingstab()),
+		container.NewTabItem("         Advanced       ", advancedtab()),
+		container.NewTabItem("          Help         ", helptab()),
+		container.NewTabItem("          About        ", abouttab()),
 	)
 	tabs.SetTabLocation(container.TabLocationTop)
 

@@ -23,6 +23,7 @@ import(
 	"fmt"
 	"flag"
 	"time"
+	"context"
 	"strings"
 	"runtime"
 	"net/url"
@@ -229,7 +230,7 @@ func finishInitApp() (bool, error) {
 }
 
 func selfUpdate(version string) error {
-	latest, found, err := selfupdate.DetectLatest("amo13/Anarchy-Droid")
+	latest, found, err := selfupdate.DetectLatest(context.Background(), selfupdate.ParseSlug("amo13/Anarchy-Droid"))
 	if err != nil {
 		return fmt.Errorf("error occurred while detecting version: %v", err)
 	}
@@ -246,7 +247,7 @@ func selfUpdate(version string) error {
 	if err != nil {
 		return fmt.Errorf("could not locate executable path: %v", err)
 	}
-	if err := selfupdate.UpdateTo(latest.AssetURL, latest.AssetName, exe); err != nil {
+	if err := selfupdate.UpdateTo(context.Background(), latest.AssetURL, latest.AssetName, exe); err != nil {
 		return fmt.Errorf("error occurred while updating binary: %v", err)
 	}
 	logger.Log("Successfully updated to version", latest.Version())
