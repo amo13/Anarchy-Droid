@@ -1,6 +1,8 @@
 package main
 
 import(
+	"strings"
+	
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/storage"
@@ -130,6 +132,9 @@ func userTwrpSelected(urc fyne.URIReadCloser, err error) {
 	get.A1.User.Twrp.Img = &get.Item{}		// Reset the twrp item
 	Lbl_user_twrp.SetText(helpers.ExtractFileNameFromHref(urc.URI().String()))
 	get.A1.User.Twrp.Img.Href = urc.URI().String()
+	if strings.HasPrefix(get.A1.User.Twrp.Img.Href, "file://") {
+		get.A1.User.Twrp.Img.Href = get.A1.User.Twrp.Img.Href[7:]
+	}
 	get.A1.User.Twrp.Img.Filename = helpers.ExtractFileNameFromHref(urc.URI().String())
 }
 
