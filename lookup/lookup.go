@@ -449,7 +449,11 @@ func IsCodename(model string) (bool, error) {
 		}
 	}
 
-	// Check in Device Lookup CSV
+	// Check in Device Lookup CSV if the model has got no entry in the YAML
+	if cm[strings.ToLower(model)] != "" {
+		return false, nil
+	}
+
 	table, err := lookupCsvToTable()
 	if err != nil {
 		return false, err
