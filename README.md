@@ -55,13 +55,13 @@ On this page of the application you can change some basic settings:
 
 - Provide your own zip file: If you are sure about what you are doing, you may want to install a rom that you downloaded by yourself from somewhere like XDA as a zip file to your computer. In that case, tick this checkbox and select the zip file you wish to install.
 
-- MicroG: MicroG replaces the Google Play Services and the Google Apps normally preinstalled on every Android device. It is needed for some non-free applications to work properly on a rom without the real Google Apps installed. It also allows your device to find its location by using wifi and cell towers in concordance with the open Mozilla database instead of the Google ones (needs to be configured in the MicroG settings after the installation is done).
+- MicroG: MicroG replaces the Google Play Services and the Google Apps normally preinstalled on every Android device. It is needed for some non-free applications to work properly on a rom without the real Google Apps installed. It also allows your device to find its location by using wifi and cell towers in concordance with the open Mozilla database instead of the Google ones (needs to be configured in the MicroG settings after the installation is done). If you choose "MicroG", the [micro5k unofficial installer](https://github.com/micro5k/microg-unofficial-installer/) will be used. If you choose "MinMicroG", the [MinMicroG installer](https://github.com/FriendlyNeighborhoodShane/MinMicroG) will be used.
 
 - OpenGapps: Choose this to install the real Google Apps with the Play Services and the Play Store. You can choose from the different variants available.
 
 - F-Droid: This is *the* app-store for free and open-source Android apps. It contains replacements for any non-free apps that you might use on a daily basis. It also offers apps that the Google Play Store will refuse to list and has purely free and open-source versions of apps that otherwise contain some non-free or closed-source components like Telegram and Organic Maps.
 
-- Aurora Store: This is an app made to use the Google Play Store without having the original Play Store app installed. You can use it with your own Google account or without Google account. Note: If using it without Google account, you will not be able to install paid apps.
+- Aurora Store: This is an app made to use the Google Play Store without having the original Play Store app installed. You can use it with your own Google account or without Google account. Note: If using it without Google account, you will not be able to install paid apps. If it is not installed by default on your system, you can still install it with F-Droid later on.
 
 
 ### Advanced settings

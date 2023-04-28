@@ -279,6 +279,15 @@ func GetProp(prop string) (string, error) {
 	return props[prop], nil
 }
 
+func SetProp(prop string, value string) error {
+	_, err := Cmd("shell", "setprop", prop, value)
+	if unavailable(err) {
+		return err
+	}
+
+	return err
+}
+
 func Imei() (string, error) {
 	maj, err := MajorAndroidVersion()
 	if unavailable(err) {

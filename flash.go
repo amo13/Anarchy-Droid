@@ -6,6 +6,7 @@ import(
 	"github.com/amo13/anarchy-droid/helpers"
 	"github.com/amo13/anarchy-droid/device"
 	"github.com/amo13/anarchy-droid/device/twrp"
+	"github.com/amo13/anarchy-droid/device/adb"
 	"github.com/amo13/anarchy-droid/get"
 
 	"fmt"
@@ -529,22 +530,49 @@ func installOnAB() error {
 }
 
 func finishInstallation() error {
-	// Send NanoDroid config file
-	logger.Log("Sending the NanoDroid setup file...")
-	time.Sleep(1 * time.Second)
-	err := twrp.SendNanodroidSetup(createNanoDroidSetup())
-	if err != nil {
-		logger.LogError("Error sending the NanoDroid setup file:", err)
-	}
+	// Send NanoDroid config file if NanoDroid is used
+	// NanoDroid is not used any more!
+	// if Select_gapps.Selected == "MicroG (outdated)" {
+	// 	logger.Log("Sending the NanoDroid setup file...")
+	// 	time.Sleep(1 * time.Second)
+	// 	err := twrp.SendNanodroidSetup(createNanoDroidSetup())
+	// 	if err != nil {
+	// 		logger.LogError("Error sending the NanoDroid setup file:", err)
+	// 	}
+	// }
 
 	if Files["gapps"] != "" {
 		logger.Log("Start gapps installation...")
 		go logger.Report(map[string]string{"progress":"Flash Gapps or MicroG"})
-		if Select_gapps.Selected == "MicroG" {
+		if Select_gapps.Selected == "MicroG" || Select_gapps.Selected == "MinMicroG" {
 			Lbl_progressbar.SetText("Installing MicroG...")
 		} else {
 			Lbl_progressbar.SetText("Installing Google framework and apps...")
 		}
+
+		// If using the Micro5kMicroG installer, configure the installer using ADB variables
+		if Select_gapps.Selected == "MicroG" {
+			adb.SetProp("zip.microg-unofficial-installer.LIVE_SETUP_DEFAULT", "0")
+			adb.SetProp("zip.microg-unofficial-installer.LIVE_SETUP_TIMEOUT", "0")
+			if Chk_fdroid.Checked {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_FDROIDPRIVEXT", "1")
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_NEWPIPE", "1")
+			} else {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_FDROIDPRIVEXT", "0")
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_NEWPIPE", "0")
+			}
+			if Chk_aurora.Checked {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_AURORASERVICES", "1")
+			} else {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_AURORASERVICES", "0")
+			}
+			if Chk_playstore.Checked {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_PLAYSTORE", "1")
+			} else {
+				adb.SetProp("zip.microg-unofficial-installer.INSTALL_PLAYSTORE", "0")
+			}
+		}
+
 		err := device.D1.FlashZip(Files["gapps"])
 		if err != nil {
 			logger.LogError("Error flashing " + Files["gapps"] + ":", err)
@@ -596,13 +624,13 @@ func finishInstallation() error {
 	// Should not happen any more since the switch from NanoDroid to MinMicroG
 	// The only way to get the google sync adapters and swype libs is to
 	// use the full "Standard" MinMicroG installer containing them
-	if Files["gsyncswype"] != "" {
+	if Files["gsync"] != "" {
 		logger.Log("Start Gsync/Swype installation...")
 		go logger.Report(map[string]string{"progress":"Flash Gsync or swype"})
 		Lbl_progressbar.SetText("Installing Google sync adapters and/or Swype libraries...")
-		err := device.D1.FlashZip(Files["gsyncswype"])
+		err := device.D1.FlashZip(Files["gsync"])
 		if err != nil {
-			logger.LogError("Error flashing " + Files["gsyncswype"] + ":", err)
+			logger.LogError("Error flashing " + Files["gsync"] + ":", err)
 			logger.Log("Proceeding anyway...")
 		}
 
@@ -758,6 +786,42 @@ func downloadFiles() (map[string]string, error) {
 			}()
 		}
 	} else if Select_gapps.Selected == "MicroG" {
+		if !helpers.IsStringInSlice(get.A1.User.Rom.Name, []string{"LineageOSMicroG", "CalyxOS", "eOS"}) {
+			// gapps_path = "flash/" + get.A1.Upstream.Micro5kMicroG.Filename
+			// wg.Add(1)
+			// go func() {
+			// 	defer wg.Done()
+
+			// 	err := get.DownloadFile(gapps_path, get.A1.Upstream.Micro5kMicroG.Href, get.A1.Upstream.Micro5kMicroG.Checksum_url_suffix)
+			// 	if err != nil {
+			// 		errs <- RetrievalError{"Micro5kMicroG", get.A1.Upstream.Micro5kMicroG.Href, err}
+			// 	}
+			// }()
+			if Chk_gsync.Checked || Chk_playstore.Checked {
+				gapps_path = "flash/" + get.A1.Upstream.Micro5kMicroG["full"].Filename
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+
+					err := get.DownloadFile(gapps_path, get.A1.Upstream.Micro5kMicroG["full"].Href, get.A1.Upstream.Micro5kMicroG["full"].Checksum_url_suffix)
+					if err != nil {
+						errs <- RetrievalError{"Micro5kMicroG-full", get.A1.Upstream.Micro5kMicroG["full"].Href, err}
+					}
+				}()
+			} else {
+				gapps_path = "flash/" + get.A1.Upstream.Micro5kMicroG["oss"].Filename
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+
+					err := get.DownloadFile(gapps_path, get.A1.Upstream.Micro5kMicroG["oss"].Href, get.A1.Upstream.Micro5kMicroG["oss"].Checksum_url_suffix)
+					if err != nil {
+						errs <- RetrievalError{"Micro5kMicroG-oss", get.A1.Upstream.Micro5kMicroG["oss"].Href, err}
+					}
+				}()
+			}
+		}
+	} else if Select_gapps.Selected == "MinMicroG" {
 		// if Chk_aurora.Checked || Chk_playstore.Checked || !helpers.IsStringInSlice(get.A1.User.Rom.Name, []string{"LineageOSMicroG", "CalyxOS", "eOS"}) {
 		// 	gapps_path = "flash/" + get.A1.Upstream.NanoDroid["MicroG"].Filename
 		// 	wg.Add(1)
@@ -820,8 +884,8 @@ func downloadFiles() (map[string]string, error) {
 	}
 
 	playstore_path := ""
-	// Only if we don't want MicroG but still want Aurora Store.
-	if Chk_playstore.Checked && !strings.HasPrefix(Files["gapps"], "MinMicroG-Standard") {
+	// Optionally install playstore if not MinMicroG-Standard or Micro5k is used.
+	if Chk_playstore.Checked && !strings.HasPrefix(Files["gapps"], "MinMicroG-Standard") && Select_gapps.Selected != "MicroG" && Select_gapps.Selected != "OpenGapps" {
 		playstore_path = "flash/" + get.A1.Upstream.MinMicroG["Playstore"].Filename
 		wg.Add(1)
 		go func() {
@@ -877,22 +941,22 @@ func downloadFiles() (map[string]string, error) {
 		Files["patcher"] = patcher_path
 	}
 
-	// gsyncswype_path := ""
-	// if (Chk_gsync.Checked || Chk_swype.Checked) && Select_gapps.Selected != "OpenGapps" {
-	// 	gsyncswype_path = "flash/" + get.A1.Upstream.NanoDroid["Google"].Filename
-	// 	wg.Add(1)
-	// 	go func() {
-	// 		defer wg.Done()
+	gsync_path := ""
+	if Chk_gsync.Checked && Select_gapps.Selected != "OpenGapps" {
+		gsync_path = "flash/" + get.A1.Upstream.Micro5kMicroG["gsync"].Filename
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 
-	// 		err := get.DownloadFile(gsyncswype_path, get.A1.Upstream.NanoDroid["Google"].Href, get.A1.Upstream.NanoDroid["Google"].Checksum_url_suffix)
-	// 		if err != nil {
-	// 			errs <- RetrievalError{"Gsync/Swype", get.A1.Upstream.NanoDroid["Google"].Href, err}
-	// 		}
-	// 	}()
-	// }
-	// if gsyncswype_path != "" {
-	// 	Files["gsyncswype"] = gsyncswype_path
-	// }
+			err := get.DownloadFile(gsync_path, get.A1.Upstream.Micro5kMicroG["gsync"].Href, get.A1.Upstream.Micro5kMicroG["gsync"].Checksum_url_suffix)
+			if err != nil {
+				errs <- RetrievalError{"Micro5kMicroG-Gsync", get.A1.Upstream.Micro5kMicroG["gsync"].Href, err}
+			}
+		}()
+	}
+	if gsync_path != "" {
+		Files["gsync"] = gsync_path
+	}
 
 	copypartitions_path := ""
 	copypartitions_path = "flash/" + get.A1.Upstream.CopyPartitions.Filename

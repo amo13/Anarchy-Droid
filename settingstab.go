@@ -341,17 +341,43 @@ func selectGappsChanged(value string) {
 				}
 			}
 		}
-	case "MicroG":
+	case "MinMicroG":
 		Chk_playstore.SetChecked(false)
 		Chk_playstore.Enable()
 		Chk_aurora.SetChecked(true)
-		// Chk_aurora.Enable()
 		Chk_aurora.Disable()
 		Select_opengapps_variant.Disable()
 		Select_opengapps_version.Disable()
 		Chk_sigspoof.SetChecked(true)
 		Chk_swype.SetChecked(false)
 		Chk_swype.Enable()
+		Chk_gsync.SetChecked(false)
+		Chk_gsync.Enable()
+
+		if !Chk_user_rom.Checked {
+			// Prefer LineageOSMicroG over LineageOS if MicroG chosen and both available
+			if get.A1.User.Rom.Name == "LineageOS" {
+				if Radio_rom_source.Selected == "Official Releases" {
+					if get.A1.Upstream.Rom["LineageOSMicroG"] != nil {
+						get.A1.User.Rom = get.A1.Upstream.Rom["LineageOSMicroG"]
+					}
+				} else if Radio_rom_source.Selected == "Archive" {
+					if get.A1.Archive.Rom["LineageOSMicroG"] != nil {
+						get.A1.User.Rom = get.A1.Archive.Rom["LineageOSMicroG"]
+					}
+				}
+			}
+		}
+	case "MicroG":
+		Chk_playstore.SetChecked(false)
+		Chk_playstore.Enable()
+		Chk_aurora.SetChecked(false)
+		Chk_aurora.Enable()
+		Select_opengapps_variant.Disable()
+		Select_opengapps_version.Disable()
+		Chk_sigspoof.SetChecked(true)
+		Chk_swype.SetChecked(false)
+		Chk_swype.Disable()
 		Chk_gsync.SetChecked(false)
 		Chk_gsync.Enable()
 
@@ -507,7 +533,7 @@ func initSettingstabWidgets() {
 	Chk_fdroid = widget.NewCheck("Install F-Droid", func(bool) {})
 	Chk_aurora = widget.NewCheck("Install Aurora Store", func(bool) {})
 	Chk_playstore = widget.NewCheck("Install Google Play Store", func(bool) {})
-	Select_gapps = widget.NewSelect([]string{"MicroG", "OpenGapps", "Nothing"}, selectGappsChanged)
+	Select_gapps = widget.NewSelect([]string{"MicroG", "MinMicroG", "OpenGapps", "Nothing"}, selectGappsChanged)
 	Select_opengapps_variant = widget.NewSelect([]string{"pico", "nano"}, selectOpengappsVariantChanged)
 	Select_opengapps_version = widget.NewSelect([]string{}, selectOpengappsVersionChanged)
 }
@@ -517,7 +543,8 @@ func setDefaultsSettingstab() {
 	Select_rom.PlaceHolder = "Select rom"
 	Select_rom.Disable()
 	Chk_fdroid.SetChecked(true)
-	Chk_aurora.SetChecked(true)
+	Chk_aurora.SetChecked(false)
+	Chk_aurora.Enable()
 	Select_opengapps_version.PlaceHolder = "Select version"
 	Select_opengapps_version.Disable()
 	Select_opengapps_variant.SetSelected("pico")

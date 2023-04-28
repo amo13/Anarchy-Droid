@@ -25,6 +25,7 @@ func NewAvailable() *Available {
 			},
 			NanoDroid: make(map[string]*Item),
 			MinMicroG: make(map[string]*Item),
+			Micro5kMicroG: make(map[string]*Item),
 			// OpenGapps["arm"]["10.0"] --> [pico nano micro mini ...]
 			OpenGapps: make(map[string]map[string][]string),
 			Magisk: &Item{},
@@ -70,6 +71,7 @@ type Upstream struct {
 	Twrp *Twrp
 	NanoDroid map[string]*Item
 	MinMicroG map[string]*Item
+	Micro5kMicroG map[string]*Item
 	OpenGapps map[string]map[string][]string
 	Magisk *Item
 	CopyPartitions *Item
@@ -119,7 +121,7 @@ func (a *Available) Populate(codename string) error {
 
 	var wg sync.WaitGroup
 	errs := make(chan RetrievalError)
-	wg.Add(19)
+	wg.Add(21)
 
 	go func() {
 		defer wg.Done()
@@ -207,6 +209,39 @@ func (a *Available) Populate(codename string) error {
 		}
 
 		logger.Log("Finished looking for NanoDroid-Patcher")
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := Micro5kMicroGLatestAvailableHref("full")
+		if err != nil {
+			errs <- RetrievalError{"Micro5kMicroG-Full", err}
+		}
+
+		logger.Log("Finished looking for Micro5kMicroG-Full")
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := Micro5kMicroGLatestAvailableHref("oss")
+		if err != nil {
+			errs <- RetrievalError{"Micro5kMicroG-OSS", err}
+		}
+
+		logger.Log("Finished looking for Micro5kMicroG-OSS")
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		_, err := Micro5kMicroGLatestAvailableHref("gsync")
+		if err != nil {
+			errs <- RetrievalError{"Micro5kMicroG-GSync", err}
+		}
+
+		logger.Log("Finished looking for Micro5kMicroG-GSync")
 	}()
 
 	go func() {
@@ -305,17 +340,6 @@ func (a *Available) Populate(codename string) error {
 		}
 
 		logger.Log("Finished looking for e-OS")
-	}()
-
-	go func() {
-		defer wg.Done()
-
-		_, err := AospExtendedLatestAvailableHref(codename)
-		if err != nil {
-			errs <- RetrievalError{"AospExtended", err}
-		}
-
-		logger.Log("Finished looking for AospExtended")
 	}()
 
 	go func() {
@@ -557,6 +581,17 @@ func (a *Available) String() string {
 	result = result + "    href: " + a.Upstream.Twrp.Zip.Href + "\n"
 	result = result + "    file: " + a.Upstream.Twrp.Zip.Filename + "\n"
 	result = result + "    ver : " + a.Upstream.Twrp.Zip.Version + "\n"
+	result = result + "  M5kMicroG: " + "\n"
+	for module, _ := range a.Upstream.Micro5kMicroG {
+		result = result + "   " + module + ":" + "\n"
+		result = result + "      href: " + a.Upstream.Micro5kMicroG[module].Href + "\n"
+		result = result + "      file: " + a.Upstream.Micro5kMicroG[module].Filename + "\n"
+		result = result + "      ver : " + a.Upstream.Micro5kMicroG[module].Version + "\n"
+	}
+	// result = result + "    name: " + a.Upstream.Micro5kMicroG.Name + "\n"
+	// result = result + "    file: " + a.Upstream.Micro5kMicroG.Filename + "\n"
+	// result = result + "    href: " + a.Upstream.Micro5kMicroG.Href + "\n"
+	// result = result + "    ver : " + a.Upstream.Micro5kMicroG.Version + "\n"
 	result = result + "  NanoDroid:" + "\n"
 	for module, _ := range a.Upstream.NanoDroid {
 		result = result + "   " + module + ":" + "\n"
