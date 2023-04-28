@@ -70,7 +70,7 @@ func DivestosParseApiResponse(codename string) (DivestosApiResponse, error) {
 	if err != nil {
 		return ParsedDivestosApiResponse, err
 	}
-	if status_code == "404 Not Found" {
+	if strings.HasPrefix(status_code, "4") {
 		return ParsedDivestosApiResponse, fmt.Errorf("not available")
 	}
 
