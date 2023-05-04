@@ -797,7 +797,7 @@ func downloadFiles() (map[string]string, error) {
 			// 		errs <- RetrievalError{"Micro5kMicroG", get.A1.Upstream.Micro5kMicroG.Href, err}
 			// 	}
 			// }()
-			if Chk_gsync.Checked || Chk_playstore.Checked {
+			if Chk_playstore.Checked {
 				gapps_path = "flash/" + get.A1.Upstream.Micro5kMicroG["full"].Filename
 				wg.Add(1)
 				go func() {
