@@ -455,9 +455,12 @@ func openWebBrowserAurora() {
 }
 
 func openWebBrowserGappsVariants() {
-	if Select_gapps.Selected == "OpenGapps" {
+	switch Select_gapps.Selected {
+	case "OpenGapps":
 		OpenWebBrowser("https://github.com/opengapps/opengapps/wiki/Package-Comparison")
-	} else if Select_gapps.Selected == "MicroG" {
+	case "MicroG":
+		OpenWebBrowser("https://github.com/micro5k/microg-unofficial-installer/blob/main/zip-content/CONTENTS.rst")
+	case "MinMicroG":
 		OpenWebBrowser("https://github.com/FriendlyNeighborhoodShane/MinMicroG#what-is-this")
 	}
 }
