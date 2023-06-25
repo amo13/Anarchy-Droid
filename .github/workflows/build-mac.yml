@@ -26,8 +26,8 @@ jobs:
     - name: Package (macOS)
       run: fyne package -release && mkdir pkg && mv anarchy-droid.app pkg/Anarchy-Droid.app
     
-    # - name: Build
-    #   run: go build -o build/ . && mv build/anarchy-droid build/Anarchy-Droid_darwin_amd64
+    - name: Fix executable bit on the executable
+      run: chmod +x pkg/Anarchy-Droid.app/Contents/MacOS/anarchy-droid
 
     - name: Extract binary
       run: mkdir -p build && cp pkg/Anarchy-Droid.app/Contents/MacOS/anarchy-droid build/Anarchy-Droid_darwin_amd64
